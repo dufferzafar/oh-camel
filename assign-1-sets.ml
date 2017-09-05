@@ -15,7 +15,7 @@ let rec print_list print_elem = function
     | [] -> ()
     | h::t ->
         print_elem h;
-        print "; ";
+        print_string "; ";
         print_list print_elem t
 ;;
 
@@ -65,12 +65,9 @@ let rec member x s =
     | h::t -> x = h || member x t
 ;;
 
-(* This sounds better! *)
-let is_mem = member;;
-
 print "Demo: member";;
-print_bool (member 3 evens);;
-print_bool (member 3 odds);;
+print_bool (member 3 evens);; (* false *)
+print_bool (member 3 odds);;  (* true *)
 print "";;
 
 
@@ -90,5 +87,32 @@ let rec length_left_recur s accu =
 let cardinality s = length_left_recur s 0;;
 
 print "Demo: cardinality";;
-print (string_of_int (cardinality numbers));;
+print (string_of_int (cardinality numbers));; (* 10 *)
+print "";;
+
+(*
+    union s1 s2 - returns the union of sets s1 and s2
+
+    TODO: Proof
+*)
+
+let rec union s1 s2 =
+    match s1 with
+        [] -> s2
+    | h::t ->
+        if member h s2 then
+            union t s2
+        else
+            h :: (union t s2)
+;;
+
+print "Demo: union";;
+
+(* Should print both odds & evens *)
+print_list_int (union odds evens);;
+print "";;
+
+(* Should print all numbers only once *)
+print_list_int (union evens numbers);;
+
 print "";;
