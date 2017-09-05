@@ -5,18 +5,18 @@
 let print = print_endline;;
 
 let print_bool b =
-  if b then
+    if b then
     print "true"
-  else
+else
     print "false"
 ;;
 
 let rec print_list print_elem = function
-  | [] -> ()
-  | h::t ->
-      print_elem h;
-      print "; ";
-      print_list print_elem t
+    | [] -> ()
+    | h::t ->
+        print_elem h;
+        print "; ";
+        print_list print_elem t
 ;;
 
 let rec print_list_int = print_list print_int;;
@@ -60,9 +60,9 @@ let emptyset = [];;
 *)
 
 let rec member x s =
-  match s with
-    [] -> false
-  | h::t -> x = h || member x t
+    match s with
+        [] -> false
+    | h::t -> x = h || member x t
 ;;
 
 (* This sounds better! *)
@@ -82,9 +82,9 @@ print "";;
 *)
 
 let rec length_left_recur s accu =
-  match s with
-    [] -> accu
-  | h::t -> (length_left_recur t 1+accu)
+    match s with
+        [] -> accu
+    | h::t -> length_left_recur t 1+accu
 ;;
 
 let cardinality s = length_left_recur s 0;;
