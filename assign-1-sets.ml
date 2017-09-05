@@ -11,16 +11,16 @@ else
     print "false"
 ;;
 
-let rec print_list print_elem = function
+let rec print_set print_elem = function
     | [] -> ()
     | h::t ->
         print_elem h;
         print_string "; ";
-        print_list print_elem t
+        print_set print_elem t
 ;;
 
-let rec print_list_int = print_list print_int;;
-let rec print_list_char = print_list print_char;;
+let rec print_set_int = print_set print_int;;
+let rec print_set_char = print_set print_char;;
 
 
 (*
@@ -68,7 +68,7 @@ let rec member x s =
 print "Demo: member";;
 print_bool (member 3 evens);; (* false *)
 print_bool (member 3 odds);;  (* true *)
-print "";;
+print "\n";;
 
 
 (*
@@ -88,7 +88,7 @@ let cardinality s = length_left_recur s 0;;
 
 print "Demo: cardinality";;
 print (string_of_int (cardinality numbers));; (* 10 *)
-print "";;
+print "\n";;
 
 (*
     union s1 s2 - returns the union of sets s1 and s2
@@ -109,10 +109,10 @@ let rec union s1 s2 =
 print "Demo: union";;
 
 (* Should print both odds & evens *)
-print_list_int (union odds evens);;
+print_set_int (union odds evens);;
 print "";;
 
 (* Should print all numbers only once *)
-print_list_int (union evens numbers);;
+print_set_int (union evens numbers);;
+print "\n\n";;
 
-print "";;
