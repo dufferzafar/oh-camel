@@ -1,14 +1,14 @@
 (*
-    Some helper functions.
+    Printing related helper functions
 *)
 
 let print = print_endline;;
 
 let print_bool b =
     if b then
-    print "true"
-else
-    print "false"
+        print "true"
+    else
+        print "false"
 ;;
 
 let rec print_set print_elem = function
@@ -22,6 +22,7 @@ let rec print_set print_elem = function
 let rec print_set_int = print_set print_int;;
 let rec print_set_char = print_set print_char;;
 
+let print_int i = print (string_of_int i);;
 
 (*
     =====================================================
@@ -66,8 +67,12 @@ let rec member x s =
 ;;
 
 print "Demo: member";;
-print_bool (member 3 evens);; (* false *)
-print_bool (member 3 odds);;  (* true *)
+
+(* Should print false *)
+print_bool (member 3 evens);;
+
+(* Should print true *)
+print_bool (member 3 odds);;
 print "\n";;
 
 
@@ -87,7 +92,13 @@ let rec length_left_recur s accu =
 let cardinality s = length_left_recur s 0;;
 
 print "Demo: cardinality";;
-print (string_of_int (cardinality numbers));; (* 10 *)
+
+(* Should print 10 *)
+print_int (cardinality numbers);;
+
+(* Should print 0 *)
+print_int (cardinality emptyset);;
+
 print "\n";;
 
 (*
