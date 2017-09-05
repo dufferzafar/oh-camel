@@ -146,3 +146,39 @@ print "";
 (* Should print 2 *)
 print_set_int (intersection [2;3] [2;4]);;
 print "\n\n";;
+
+
+(*
+    difference s1 s2 - returns the set consisting of elements of s1
+    which are not in s2
+
+    TODO: Proof
+*)
+
+let rec difference s1 s2 =
+    match s1 with
+        [] -> []
+    | h::t ->
+        if not (member h s2) then
+            h :: (difference t s2)
+        else
+            difference t s2
+;;
+
+print "Demo: difference";;
+
+(* Should only print odds *)
+print_set_int (difference numbers evens);;
+print "";
+
+(* Should print nothing odds *)
+print_set_int (difference odds evens);;
+print "";
+
+(* Should print nothing - a blank line *)
+print_set_int (difference odds odds);;
+print "";
+
+(* Should print 3 *)
+print_set_int (difference [2;3] [2;4]);;
+print "\n\n";;
