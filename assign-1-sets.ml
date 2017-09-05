@@ -116,3 +116,33 @@ print "";;
 print_set_int (union evens numbers);;
 print "\n\n";;
 
+
+(*
+    intersection s1 s2 - returns the intersection of s1 and s2
+
+    TODO: Proof
+*)
+
+let rec intersection s1 s2 =
+    match s1 with
+        [] -> []
+    | h::t ->
+        if member h s2 then
+            h :: (intersection t s2)
+        else
+            intersection t s2
+;;
+
+print "Demo: intersection";;
+
+(* Should only print evens *)
+print_set_int (intersection evens numbers);;
+print "";
+
+(* Should print nothing - a blank line *)
+print_set_int (intersection odds evens);;
+print "";
+
+(* Should print 2 *)
+print_set_int (intersection [2;3] [2;4]);;
+print "\n\n";;
