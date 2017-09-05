@@ -207,3 +207,28 @@ print_bool (subset odds evens);;
 (* Should print true *)
 print_bool (subset odds odds);;
 print "\n";;
+
+
+(*
+    equalset s1 s2 - returns true if and only if s1 is equal to s2
+
+    TODO: Proof
+*)
+
+let rec equalset s1 s2 = subset s1 s2 && subset s2 s1;;
+
+print "Demo: equalset";;
+
+(* Should print false *)
+print_bool (equalset evens numbers);;
+
+(* Should print false *)
+print_bool (equalset odds evens);;
+
+(* Should print true *)
+print_bool (equalset evens evens);;
+
+(* Should print true *)
+print_bool (equalset [2;3;4] [4;2;3]);;
+
+print "\n";;
