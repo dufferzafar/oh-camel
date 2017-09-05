@@ -182,3 +182,28 @@ print "";
 (* Should print 3 *)
 print_set_int (difference [2;3] [2;4]);;
 print "\n\n";;
+
+
+(*
+    subset s1 s2 - returns true if and only if s1 is a subset of s2
+
+    TODO: Proof
+*)
+
+let rec subset s1 s2 =
+    match s1 with
+        [] -> true
+    | h::t -> member h s2 && subset t s2
+;;
+
+print "Demo: subset";;
+
+(* Should print true *)
+print_bool (subset evens numbers);;
+
+(* Should print false *)
+print_bool (subset odds evens);;
+
+(* Should print true *)
+print_bool (subset odds odds);;
+print "\n";;
