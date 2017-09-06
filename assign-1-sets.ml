@@ -365,40 +365,102 @@ let f_vowels x =
 
 
 (*
-    emptyset - returns the representation of an empty set
+    f_emptyset - returns the representation of an empty set
 *)
 let f_emptyset () = false;;
 
 
 (*
-    member x s - returns true if and only if x is in s
+    f_member x s - returns true if and only if x is in s
 *)
 let f_member x s = s x || false;;
 
 print "Demo: f_member";;
 
+(* Should print true *)
+print_bool (f_member 3 f_odds);;
+
 (* Should print false *)
 print_bool (f_member 3 f_evens);;
 
-(* Should print true *)
-print_bool (f_member 3 f_odds);;
 print "\n";;
 
 
 (*
-    union s1 s2 - returns the union of sets s1 and s2
+    f_union s1 s2 - returns the union of sets s1 and s2
 
     TODO: Proof
 *)
 
 let f_union s1 s2 = fun x -> s1 x || s2 x;;
 
-print "Demo: union";;
+print "Demo: f_union";;
 
 (* Should print true *)
-print_bool (f_member 5 (f_union f_odds f_evens));;
+print_bool (f_member 3 (f_union f_odds f_evens));;
 
 (* Should print false *)
-print_bool (f_member 25 (f_union f_odds f_evens));;
+print_bool (f_member 33 (f_union f_odds f_evens));;
+
+print "\n";;
+
+
+(*
+    f_intersection s1 s2 - returns the intersection of sets s1 and s2
+
+    TODO: Proof
+*)
+
+let f_intersection s1 s2 = fun x -> s1 x && s2 x;;
+
+print "Demo: f_intersection";;
+
+(* Should print true *)
+print_bool (f_member 3 (f_intersection f_odds f_numbers));;
+
+(* Should print false *)
+print_bool (f_member 3 (f_intersection f_odds f_evens));;
+
+print "\n";;
+
+
+(*
+    f_difference s1 s2 - returns the set consisting of elements of s1
+    which are not in s2
+
+    TODO: Proof
+*)
+
+let f_difference s1 s2 = fun x -> s1 x && not (s2 x);;
+
+print "Demo: f_difference";;
+
+(* Should print true *)
+print_bool (f_member 3 (f_difference f_odds f_evens));;
+
+(* Should print false *)
+print_bool (f_member 3 (f_difference f_odds f_numbers));;
+
+print "\n";;
+
+
+(*
+    f_product s1 s2 - returns the cartesian product of s1 and s2.
+
+    TODO: Proof
+*)
+
+let f_product s1 s2 = fun (x,y) -> s1 x && s2 y;;
+
+print "Demo: f_product";;
+
+(* Should print true *)
+print_bool (f_member (1,2) (f_product f_odds f_evens));;
+
+(* Should print true *)
+print_bool (f_member (1,'a') (f_product f_odds f_vowels));;
+
+(* Should print false *)
+print_bool (f_member (2,'q') (f_product f_odds f_vowels));;
 
 print "\n";;
