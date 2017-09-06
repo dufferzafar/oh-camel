@@ -79,7 +79,7 @@ let rec member x s =
     | h::t -> x = h || member x t
 ;;
 
-print "Demo: member";;
+print "Test: member";;
 
 (* Should print false *)
 print_bool (member 3 evens);;
@@ -104,7 +104,7 @@ let cardinality s =
     in
     length_left_recur s 0;;
 
-print "Demo: cardinality";;
+print "Test: cardinality";;
 
 (* Should print 10 *)
 print_int (cardinality numbers);;
@@ -170,7 +170,7 @@ let rec union s1 s2 =
             h :: (union t s2)
 ;;
 
-print "Demo: union";;
+print "Test: union";;
 
 (* Should print both odds & evens *)
 print_set_int (union odds evens);;
@@ -237,7 +237,7 @@ let rec intersection s1 s2 =
             intersection t s2
 ;;
 
-print "Demo: intersection";;
+print "Test: intersection";;
 
 (* Should only print evens *)
 print_set_int (intersection evens numbers);;
@@ -271,7 +271,7 @@ let rec difference s1 s2 =
             difference t s2
 ;;
 
-print "Demo: difference";;
+print "Test: difference";;
 
 (* Should only print odds *)
 print_set_int (difference numbers evens);;
@@ -304,7 +304,7 @@ let rec subset s1 s2 =
     | h::t -> member h s2 && subset t s2
 ;;
 
-print "Demo: subset";;
+print "Test: subset";;
 
 (* Should print true *)
 print_bool (subset evens numbers);;
@@ -328,7 +328,7 @@ print "\n";;
 
 let rec equalset s1 s2 = subset s1 s2 && subset s2 s1;;
 
-print "Demo: equalset";;
+print "Test: equalset";;
 
 (* Should print false *)
 print_bool (equalset evens numbers);;
@@ -359,7 +359,7 @@ let rec product s1 s2 =
  (* | h::t -> (List.map (fun x -> (h,x)) s2) @ (product t s2) *)
 ;;
 
-print "Demo: product";;
+print "Test: product";;
 
 (* Should print tuples of odds x vowels *)
 print_set_tuple "(%d, %c)" (product odds vowels);;
@@ -386,7 +386,7 @@ let rec power s =
         (*  pwr @ (List.map (fun x -> h::x) pwr) *)
 ;;
 
-print "Demo: power";;
+print "Test: power";;
 
 (* Should print 1 *)
 print_int (cardinality (power (emptyset ())));;
@@ -454,7 +454,7 @@ let f_emptyset () = false;;
 *)
 let f_member x s = s x || false;;
 
-print "Demo: f_member";;
+print "Test: f_member";;
 
 (* Should print true *)
 print_bool (f_member 3 f_odds);;
@@ -478,7 +478,7 @@ print "\n";;
 
 let f_union s1 s2 = fun x -> s1 x || s2 x;;
 
-print "Demo: f_union";;
+print "Test: f_union";;
 
 (* Should print true *)
 print_bool (f_member 3 (f_union f_odds f_evens));;
@@ -502,7 +502,7 @@ print "\n";;
 
 let f_intersection s1 s2 = fun x -> s1 x && s2 x;;
 
-print "Demo: f_intersection";;
+print "Test: f_intersection";;
 
 (* Should print true *)
 print_bool (f_member 3 (f_intersection f_odds f_numbers));;
@@ -527,7 +527,7 @@ print "\n";;
 
 let f_difference s1 s2 = fun x -> s1 x && not (s2 x);;
 
-print "Demo: f_difference";;
+print "Test: f_difference";;
 
 (* Should print true *)
 print_bool (f_member 3 (f_difference f_odds f_evens));;
@@ -553,7 +553,7 @@ print "\n";;
 
 let f_product s1 s2 = fun (x,y) -> s1 x && s2 y;;
 
-print "Demo: f_product";;
+print "Test: f_product";;
 
 (* Should print true *)
 print_bool (f_member (1,2) (f_product f_odds f_evens));;
