@@ -11,12 +11,22 @@ let print_bool b =
         print "false"
 ;;
 
-let rec print_set print_elem = function
-    | [] -> ()
+let rec print_set print_elem s =
+    match s with
+        [] -> ()
     | h::t ->
         print_elem h;
         print_string "; ";
         print_set print_elem t
+;;
+
+let rec print_set_tuple fmt s =
+    match s with
+        [] -> ()
+    | (a,b)::t ->
+        Printf.printf fmt a b;
+        print_string "; ";
+        print_set_tuple fmt t
 ;;
 
 let rec print_set_int = print_set print_int;;
@@ -260,7 +270,7 @@ print "\n";;
 *)
 
 let tuplify e x = (e, x);;
-let element_product e s = List.map (tuplify e) s
+let element_product e s = List.map (tuplify e) s;;
 
 let rec product s1 s2 =
     match s1 with
@@ -270,4 +280,12 @@ let rec product s1 s2 =
 ;;
 
 print "Demo: product";;
+
+(* Should print tuples of odds x chars *)
+print_set_tuple "(%d, %c)" (product odds chars);;
 print "\n";;
+
+(* Should print tuples odds x evens *)
+print_set_tuple "(%d, %d)" (product odds evens);;
+print "\n\n";;
+
