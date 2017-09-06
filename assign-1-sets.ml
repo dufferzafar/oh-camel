@@ -318,5 +318,68 @@ print_int (cardinality (power vowels));;
 (* Should print 1024 *)
 print_int (cardinality (power numbers));;
 
+(* Should print true *)
+print_bool ((cardinality (power odds)) = (cardinality (power odds)));;
+
 print "\n";;
 
+(*
+    ===================================================
+    ====================== Part B =====================
+    ===================================================
+
+    A set is represented by its characteristic function
+*)
+
+(*
+    Examples of some sets used for testing
+*)
+
+(* let f_numbers x = List.elem x numbers *)
+let f_numbers x =
+    match x with
+        | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 -> true
+        | _ -> false
+;;
+
+(* let f_numbers x = List.elem x odds *)
+let f_evens x =
+    match x with
+        | 1 | 3 | 5 | 7 | 9 -> true
+        | _ -> false
+;;
+
+(* let f_numbers x = List.elem x evens *)
+let f_evens x =
+    match x with
+        | 0 | 2 | 4 | 6 | 8 -> true
+        | _ -> false
+;;
+
+(* let f_chars x = List.elem x vowels *)
+let f_evens x =
+    match x with
+        | 'a' | 'e' | 'i' | 'o' | 'u' -> true
+        | _ -> false
+;;
+
+
+(*
+    emptyset - returns the representation of an empty set
+*)
+let f_emptyset () = false;;
+
+
+(*
+    member x s - returns true if and only if x is in s
+*)
+let f_member x s = s x;;
+
+print "Demo: f_member";;
+
+(* Should print false *)
+print_bool (member 3 evens);;
+
+(* Should print true *)
+print_bool (member 3 odds);;
+print "\n";;
