@@ -383,3 +383,22 @@ print_bool (f_member 3 f_evens);;
 (* Should print true *)
 print_bool (f_member 3 f_odds);;
 print "\n";;
+
+
+(*
+    union s1 s2 - returns the union of sets s1 and s2
+
+    TODO: Proof
+*)
+
+let f_union s1 s2 = fun x -> s1 x || s2 x;;
+
+print "Demo: union";;
+
+(* Should print true *)
+print_bool (f_member 5 (f_union f_odds f_evens));;
+
+(* Should print false *)
+print_bool (f_member 25 (f_union f_odds f_evens));;
+
+print "\n";;
