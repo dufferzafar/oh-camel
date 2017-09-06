@@ -184,7 +184,47 @@ print "\n\n";;
 (*
     intersection s1 s2 - returns the intersection of s1 and s2
 
-    TODO: Proof
+    Maintainence of representational invariant:
+
+        Claim:      When s1 & s2 are sets i.e. lists without duplicates
+                    then (intersection s1 s2) is also a set.
+
+        Proof:      by induction on s1
+
+        Case:       s1 = []             (emptyset)
+
+                    for all s2
+
+                    intersection s1 s2
+                =   intersection [] s2
+                =   []                  (evaluating the intersection function)
+
+                    which is a set      (because the emptyset is a set)
+
+        Case:       s1 = h :: t
+
+        Induction
+        Hypothesis:
+         (I. H.)    for all s2, (intersection t s2) is a set
+
+        Induction
+        Step:
+                    intersection s1 s2
+                =   intersection (h :: t) s2
+
+                    which acc. to the function can be broken into two cases:
+
+                =   intersection t s2           (if h ∉ s2)
+                    which is a set              (by the I.H.)
+
+                    or:
+
+                =   h :: (intersection t s2)    (if h ∈ s2)
+
+                    s = (intersection t s2) is a set (by I.H)
+                    since h ∈ s2 then adding h to s will not introduce a duplicate
+
+                    therefore, h :: (intersection t s2) is also a set
 *)
 
 let rec intersection s1 s2 =
@@ -219,8 +259,6 @@ print "\n\n";;
 (*
     difference s1 s2 - returns the set consisting of elements of s1
     which are not in s2
-
-    TODO: Proof
 *)
 
 let rec difference s1 s2 =
@@ -258,8 +296,6 @@ print "\n\n";;
 
 (*
     subset s1 s2 - returns true if and only if s1 is a subset of s2
-
-    TODO: Proof
 *)
 
 let rec subset s1 s2 =
@@ -311,8 +347,6 @@ print "\n";;
 
 (*
     product s1 s2 - returns the cartesian product of s1 and s2
-
-    TODO: Proof
 *)
 
 let tuplify e x = (e, x);;
@@ -338,8 +372,6 @@ print "\n\n";;
 
 (*
     power s - returns the set of subsets of s
-
-    TODO: Proof
 *)
 
 let listify e x = e :: x;;
@@ -436,7 +468,7 @@ print "\n";;
 (*
     f_union s1 s2 - returns the union of sets s1 and s2
 
-    Correctness:
+    Maintainence of Representation Invariant & Proof of Correctness:
 
         If s1, s2 are 'a -> bool functions then f_union returns
         another 'a -> bool function which is true if either of
@@ -460,7 +492,7 @@ print "\n";;
 (*
     f_intersection s1 s2 - returns the intersection of sets s1 and s2
 
-    Correctness:
+    Maintainence of Representation Invariant & Proof of Correctness:
 
         If s1, s2 are 'a -> bool functions then f_intersection returns
         another 'a -> bool function which is true if both s1, s2 are
@@ -485,7 +517,7 @@ print "\n";;
     f_difference s1 s2 - returns the set consisting of elements of s1
     which are not in s2
 
-    Correctness:
+    Maintainence of Representation Invariant & Proof of Correctness:
 
         If s1, s2 are 'a -> bool functions then f_difference returns
         another 'a -> bool function which is true when s1 is true
@@ -509,7 +541,7 @@ print "\n";;
 (*
     f_product s1 s2 - returns the cartesian product of s1 and s2
 
-    Correctness:
+    Maintainence of Representation Invariant & Proof of Correctness:
 
         If s1: 'a -> bool and s2: 'b -> bool are characteristic
         functions of two sets then f_product returns a function
