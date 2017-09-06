@@ -43,15 +43,14 @@ let print_int i = print (string_of_int i);;
 *)
 
 (*
-    Example of some sets
-    Used throught for testing, demo etc.
+    Examples of some sets used for testing
 *)
 
 let numbers = [0;1;2;3;4;5;6;7;8;9];;
 let odds = [1;3;5;7;9];;
 let evens = [0;2;4;6;8];;
 
-let chars = ['a';'b';'c';'d'];;
+let vowels = ['a';'e';'i';'o';'u'];;
 
 
 (*
@@ -281,8 +280,8 @@ let rec product s1 s2 =
 
 print "Demo: product";;
 
-(* Should print tuples of odds x chars *)
-print_set_tuple "(%d, %c)" (product odds chars);;
+(* Should print tuples of odds x vowels *)
+print_set_tuple "(%d, %c)" (product odds vowels);;
 print "\n";;
 
 (* Should print tuples odds x evens *)
@@ -313,11 +312,8 @@ print "Demo: power";;
 (* Should print 1 *)
 print_int (cardinality (power emptyset));;
 
-(* Should print 16 *)
-print_int (cardinality (power chars));;
-
 (* Should print 32 *)
-print_int (cardinality (power odds));;
+print_int (cardinality (power vowels));;
 
 (* Should print 1024 *)
 print_int (cardinality (power numbers));;
