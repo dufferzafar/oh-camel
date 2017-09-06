@@ -83,13 +83,13 @@ print "\n";;
     let cardinality s = List.length x s;
 *)
 
-let rec length_left_recur s accu =
-    match s with
-        [] -> accu
-    | h::t -> length_left_recur t 1+accu
-;;
-
-let cardinality s = length_left_recur s 0;;
+let cardinality s =
+    let rec length_left_recur s accu =
+        match s with
+            [] -> accu
+        | h::t -> length_left_recur t 1+accu
+    in
+    length_left_recur s 0;;
 
 print "Demo: cardinality";;
 
@@ -154,6 +154,10 @@ print "";
 print_set_int (intersection odds evens);;
 print "";
 
+(* Should print nothing - a blank line *)
+print_set_int (intersection odds emptyset);;
+print "";
+
 (* Should print 2 *)
 print_set_int (intersection [2;3] [2;4]);;
 print "\n\n";;
@@ -182,7 +186,11 @@ print "Demo: difference";;
 print_set_int (difference numbers evens);;
 print "";
 
-(* Should print nothing odds *)
+(* Should print odds *)
+print_set_int (difference odds emptyset);;
+print "";
+
+(* Should print odds *)
 print_set_int (difference odds evens);;
 print "";
 
