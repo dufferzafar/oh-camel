@@ -289,3 +289,38 @@ print "\n";;
 print_set_tuple "(%d, %d)" (product odds evens);;
 print "\n\n";;
 
+
+(*
+    power s - returns the set of subsets of s
+
+    TODO: Proof
+*)
+
+let listify e x = e :: x;;
+let element_power e s = List.map (listify e) s;;
+
+let rec power s =
+    match s with
+        [] -> [[]]
+    | h::t ->
+        let pwr = power t in
+            pwr @ (element_power h pwr)
+        (*  pwr @ (List.map (fun x -> h::x) pwr) *)
+;;
+
+print "Demo: power";;
+
+(* Should print 1 *)
+print_int (cardinality (power emptyset));;
+
+(* Should print 16 *)
+print_int (cardinality (power chars));;
+
+(* Should print 32 *)
+print_int (cardinality (power odds));;
+
+(* Should print 1024 *)
+print_int (cardinality (power numbers));;
+
+print "\n";;
+
