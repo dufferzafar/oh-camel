@@ -56,10 +56,14 @@ let vowels = ['a';'e';'i';'o';'u'];;
 (*
     emptyset - returns the representation of an empty set
 
-    An empty set has no elements, hence no duplicates
-    This trivially maintains the representation invariant
+    Maintainence of representational invariant:
+
+        An empty set has no elements, therefore no duplicates.
+
+        This trivially maintains the invariant that emptyset returns
+        a set i.e a list without duplicates.
 *)
-let emptyset = [];;
+let emptyset () = [];;
 
 
 (*
@@ -106,7 +110,7 @@ print "Demo: cardinality";;
 print_int (cardinality numbers);;
 
 (* Should print 0 *)
-print_int (cardinality emptyset);;
+print_int (cardinality (emptyset ()));;
 
 print "\n";;
 
@@ -164,7 +168,7 @@ print_set_int (intersection odds evens);;
 print "";
 
 (* Should print nothing - a blank line *)
-print_set_int (intersection odds emptyset);;
+print_set_int (intersection odds (emptyset ()));;
 print "";
 
 (* Should print 2 *)
@@ -196,7 +200,7 @@ print_set_int (difference numbers evens);;
 print "";
 
 (* Should print odds *)
-print_set_int (difference odds emptyset);;
+print_set_int (difference odds (emptyset ()));;
 print "";
 
 (* Should print odds *)
@@ -313,7 +317,7 @@ let rec power s =
 print "Demo: power";;
 
 (* Should print 1 *)
-print_int (cardinality (power emptyset));;
+print_int (cardinality (power (emptyset ())));;
 
 (* Should print 32 *)
 print_int (cardinality (power vowels));;
