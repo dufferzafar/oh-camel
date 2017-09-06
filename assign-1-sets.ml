@@ -403,6 +403,32 @@ print_bool ((cardinality (power odds)) = (cardinality (power odds)));;
 print "\n";;
 
 (*
+    ====================== Laws =====================
+*)
+
+print "Laws";;
+
+(* Should print false *)
+print_bool (member 1 (emptyset ()));;
+
+(* Should print 0 *)
+print_int (cardinality (emptyset ()));;
+
+(* Should print true *)
+print_bool ((member 1 odds) = (member 1 (union odds evens)));;
+
+(* Should print true *)
+print_bool ((member 1 (intersection odds numbers) = (member 1 odds)));;
+
+(* Should print true *)
+print_bool (equalset (intersection odds numbers) (intersection numbers odds));;
+
+(* Should print true *)
+print_bool (cardinality (product odds evens) = ((cardinality odds) * (cardinality evens)));;
+
+print "\n";;
+
+(*
     ===================================================
     ====================== Part B =====================
     ===================================================
