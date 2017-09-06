@@ -251,3 +251,23 @@ print_bool (equalset evens evens);;
 print_bool (equalset [2;3;4] [4;2;3]);;
 
 print "\n";;
+
+
+(*
+    product s1 s2 - returns the cartesian product of s1 and s2
+
+    TODO: Proof
+*)
+
+let tuplify e x = (e, x);;
+let element_product e s = List.map (tuplify e) s
+
+let rec product s1 s2 =
+    match s1 with
+        [] -> []
+    | h::t -> (element_product h s2) @ (product t s2)
+ (* | h::t -> (List.map (fun x -> (h,x)) s2) @ (product t s2) *)
+;;
+
+print "Demo: product";;
+print "\n";;
