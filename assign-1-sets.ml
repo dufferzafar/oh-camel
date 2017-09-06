@@ -343,7 +343,7 @@ let f_numbers x =
 ;;
 
 (* let f_numbers x = List.elem x odds *)
-let f_evens x =
+let f_odds x =
     match x with
         | 1 | 3 | 5 | 7 | 9 -> true
         | _ -> false
@@ -357,7 +357,7 @@ let f_evens x =
 ;;
 
 (* let f_chars x = List.elem x vowels *)
-let f_evens x =
+let f_vowels x =
     match x with
         | 'a' | 'e' | 'i' | 'o' | 'u' -> true
         | _ -> false
@@ -373,13 +373,13 @@ let f_emptyset () = false;;
 (*
     member x s - returns true if and only if x is in s
 *)
-let f_member x s = s x;;
+let f_member x s = s x || false;;
 
 print "Demo: f_member";;
 
 (* Should print false *)
-print_bool (member 3 evens);;
+print_bool (f_member 3 f_evens);;
 
 (* Should print true *)
-print_bool (member 3 odds);;
+print_bool (f_member 3 f_odds);;
 print "\n";;
