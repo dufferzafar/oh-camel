@@ -240,7 +240,10 @@ print "\n";;
 (*
     equalset s1 s2 - returns true if and only if s1 is equal to s2
 
-    TODO: Proof
+    Correctness:
+
+        By definition, two sets s1 & s2 are equal if:
+        s1 is a subset of s2 and s2 is a subset of s1
 *)
 
 let rec equalset s1 s2 = subset s1 s2 && subset s2 s1;;
@@ -389,7 +392,12 @@ print "\n";;
 (*
     f_union s1 s2 - returns the union of sets s1 and s2
 
-    TODO: Proof
+    Correctness:
+
+        If s1, s2 are 'a -> bool functions then f_union returns
+        another 'a -> bool function which is true if either of
+        s1, s2 are true on some set element x - this is precisely
+        how set union is defined.
 *)
 
 let f_union s1 s2 = fun x -> s1 x || s2 x;;
@@ -408,7 +416,12 @@ print "\n";;
 (*
     f_intersection s1 s2 - returns the intersection of sets s1 and s2
 
-    TODO: Proof
+    Correctness:
+
+        If s1, s2 are 'a -> bool functions then f_intersection returns
+        another 'a -> bool function which is true if both s1, s2 are
+        true on some set element x - this is precisely how set intersection
+        is defined.
 *)
 
 let f_intersection s1 s2 = fun x -> s1 x && s2 x;;
@@ -428,7 +441,12 @@ print "\n";;
     f_difference s1 s2 - returns the set consisting of elements of s1
     which are not in s2
 
-    TODO: Proof
+    Correctness:
+
+        If s1, s2 are 'a -> bool functions then f_difference returns
+        another 'a -> bool function which is true when s1 is true
+        but s2 is false on some set element x - this is precisely
+        how set difference is defined.
 *)
 
 let f_difference s1 s2 = fun x -> s1 x && not (s2 x);;
@@ -445,9 +463,16 @@ print "\n";;
 
 
 (*
-    f_product s1 s2 - returns the cartesian product of s1 and s2.
+    f_product s1 s2 - returns the cartesian product of s1 and s2
 
-    TODO: Proof
+    Correctness:
+
+        If s1: 'a -> bool and s2: 'b -> bool are characteristic
+        functions of two sets then f_product returns a function
+        ('a * 'b) -> bool which is true when s1 is true for some
+        set element x and s2 is true for some set element y.
+
+        Which is the definition of the cartesian product.
 *)
 
 let f_product s1 s2 = fun (x,y) -> s1 x && s2 y;;
