@@ -117,7 +117,47 @@ print "\n";;
 (*
     union s1 s2 - returns the union of sets s1 and s2
 
-    TODO: Proof
+    Maintainence of representational invariant:
+
+        Claim:      When s1 & s2 are sets i.e. lists without duplicates
+                    then (union s1 s2) is also a set.
+
+        Proof:      by induction on s1
+
+        Case:       s1 = []             (emptyset)
+
+                    for all s2
+
+                    union s1 s2
+                =   union [] s2
+                =   s2                  (evaluating the union function)
+
+                    which is a set      (as the inputs are assumed to be sets)
+
+        Case:       s1 = h :: t
+
+        Induction
+        Hypothesis:
+         (I. H.)    for all s2, (union t s2) is a set
+
+        Induction
+        Step:
+                    union s1 s2
+                =   union (h :: t) s2
+
+                    which acc. to the function can be broken into two cases:
+
+                =   union t s2          (if h ∈ s2)
+                    which is a set      (by the I.H.)
+
+                    or:
+
+                =   h :: (union t s2)   (if h ∉ s2)
+
+                    s = (union t s2) is a set (by I.H)
+                    since h ∉ s2 then adding h to s will not introduce a duplicate
+
+                    therefore, h :: (union t s2) is also a set
 *)
 
 let rec union s1 s2 =
