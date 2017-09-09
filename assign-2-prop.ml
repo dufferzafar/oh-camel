@@ -67,6 +67,23 @@ type prop =
 ;;
 
 (*
+    print_prop: prop -> unit
+
+    prints a proposition using standard logic syntax
+*)
+let rec print_prop p =
+    match p with
+    | P s              -> print_string s
+    | T                -> print_string "T"
+    | F                -> print_string "F"
+    | Not p1           -> print_string "~"; print_prop p1;
+    | And (p1, p2)     -> print_string "("; print_prop p1; print_string " ^ "; print_prop p2; print_string ")";
+    | Or (p1, p2)      -> print_string "("; print_prop p1; print_string " v "; print_prop p2; print_string ")";
+    | Implies (p1, p2) -> print_string "("; print_prop p1; print_string " -> "; print_prop p2; print_string ")";
+;;
+
+
+(*
     height: prop -> int
 
     returns the height of a proposition
