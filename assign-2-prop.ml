@@ -5,10 +5,9 @@
 let print = print_endline;;
 
 let print_bool b =
-    if b then
-        print "true"
-    else
-        print "false"
+    match b with
+    | true  -> print "true"
+    | false -> print "false"
 ;;
 
 let rec print_set print_elem s =
@@ -66,6 +65,7 @@ type prop =
     | Implies of prop * prop
 ;;
 
+
 (*
     print_prop: prop -> unit
 
@@ -99,6 +99,7 @@ let rec height p =
     | Or (p1, p2)
     | Implies (p1, p2) -> 1 + max (height p1) (height p2)
 ;;
+
 
 (*
     size: prop -> int
@@ -136,7 +137,6 @@ let rec letters p =
 ;;
 
 
-
 (*
     truth: prop -> (string -> bool) -> bool
 
@@ -162,10 +162,15 @@ let rec truth p rho =
     Used for testing throughout the assignment
 *)
 
-(* ((a ^ b) v (c ^ a)) *)
-let example_1 = Or( And( P("a"), P("b") ), And( P("c"), P("a") ) );;
+(* Small chunks of props that are used to build bigger ones *)
+let prop_1 = And( P("a"), Not(P("b")) )
+let prop_2 = Implies( P("a"), P("c") )
+let prop_3 = Or( Not(P("b")), P("d") )
 
-let rho_1 s =
+let prop_ex_1 = Or(prop_1, prop_2);;
+let prop_ex_2 = Not(And(prop_2, prop_3));;
+
+let rho_ex_1 s =
     match s with
     | "a" -> true
     | "b" -> false
@@ -174,12 +179,25 @@ let rho_1 s =
     | _   -> false
 ;;
 
-print_string "Example 1: "; print_prop example_1;
+print_string "Example 1: ";     print_prop prop_ex_1;
 print "\n";
 
-print_string "Height: "; print_int (size example_1);;
-print_string "Size: "; print_int (height example_1);;
-print_string "Letters (set): "; print_set_str (letters example_1);;
+print_string "Height: ";        print_int (size prop_ex_1);;
+print_string "Size: ";          print_int (height prop_ex_1);;
+print_string "Letters (set): "; print_set_str (letters prop_ex_1);;
 print "\n";
 
-print_string "Truth (rho_1): "; print_bool (truth example_1 rho_1);;
+print_string "Truth (rho_ex_1): "; print_bool (truth prop_ex_1 rho_ex_1);;
+print "\n\n";
+
+(* ============================================================================ *)
+
+print_string "Example 2: ";     print_prop prop_ex_2;
+print "\n";
+
+print_string "Height: ";        print_int (size prop_ex_2);;
+print_string "Size: ";          print_int (height prop_ex_2);;
+print_string "Letters (set): "; print_set_str (letters prop_ex_2);;
+print "\n";
+
+print_string "Truth (rho_ex_1): "; print_bool (truth prop_ex_2 rho_ex_1);;
