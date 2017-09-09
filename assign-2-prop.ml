@@ -157,6 +157,33 @@ let rec truth p rho =
 
 
 (*
+    nnf: prop -> prop
+
+    converts a proposition into negation normal form where:
+        1. all Not's appear just above only prop letters
+           and strictly below And's and Or's
+        2. all Implies have been replaced by its logically equivalent forms
+*)
+let rec nnf p =
+    match p with
+    | P s              -> P s
+    | T                -> T
+    | F                -> F
+    | And (p1, p2)     -> And (nnf p1, nnf p2)
+    | Or (p1, p2)      -> Or (nnf p1, nnf p2)
+    | Implies (p1, p2) -> Or (nnf (Not p1), nnf p2)
+
+    (* All logic below is "inverted" *)
+    | Not q           -> match q with
+        | P s              -> p
+        | T                -> T
+        | F                -> F
+        | Not p1           -> nnf p1
+        | And (p1, p2)     -> Or (nnf (Not p1), nnf (Not p2))
+        | Or (p1, p2)      -> And (nnf (Not p1), nnf (Not p2))
+        | Implies (p1, p2) -> And (nnf p1, nnf (Not p2))
+
+(*
     Examples of some propositions
 
     Used for testing throughout the assignment
@@ -179,8 +206,12 @@ let rho_ex_1 s =
     | _   -> false
 ;;
 
-print_string "Example 1: ";     print_prop prop_ex_1;
+print_string "Ex 1: ";          print_prop prop_ex_1;
+print "";
+
+print_string "NNF: ";           print_prop (nnf prop_ex_1);
 print "\n";
+
 
 print_string "Height: ";        print_int (size prop_ex_1);;
 print_string "Size: ";          print_int (height prop_ex_1);;
@@ -192,7 +223,10 @@ print "\n\n";
 
 (* ============================================================================ *)
 
-print_string "Example 2: ";     print_prop prop_ex_2;
+print_string "Ex 2: ";          print_prop prop_ex_2;
+print "";
+
+print_string "NNF: ";           print_prop (nnf prop_ex_2);
 print "\n";
 
 print_string "Height: ";        print_int (size prop_ex_2);;
@@ -201,3 +235,5 @@ print_string "Letters (set): "; print_set_str (letters prop_ex_2);;
 print "\n";
 
 print_string "Truth (rho_ex_1): "; print_bool (truth prop_ex_2 rho_ex_1);;
+print "\n";
+
