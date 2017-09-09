@@ -125,15 +125,34 @@ let rec size p =
     that appear in a proposition
 *)
 
-(* TODO: Use "real" sets instead of lists? *)
 let rec letters p =
     match p with
-    | P p1             -> [p1]
+    | P s              -> [s]
     | T | F            -> []
     | Not p1           -> letters p1
     | And (p1, p2)
     | Or (p1, p2)
     | Implies (p1, p2) -> union (letters p1) (letters p2)
+;;
+
+
+
+(*
+    truth: prop -> (string -> bool) -> bool
+
+    evaluates a proposition with respect to a given
+    truth assignment to the propositional letters
+*)
+
+let rec truth p rho =
+    match p with
+    | P s              -> rho s
+    | T                -> true
+    | F                -> false
+    | Not p1           -> not (truth p1 rho);
+    | And (p1, p2)     -> (truth p1 rho) && (truth p2 rho);
+    | Or (p1, p2)      -> (truth p1 rho) || (truth p2 rho);
+    | Implies (p1, p2) -> (not (truth p1 rho)) || (truth p2 rho);
 ;;
 
 
@@ -143,10 +162,24 @@ let rec letters p =
     Used for testing throughout the assignment
 *)
 
-(* ((a ^ b) v (c ^ d)) *)
-
+(* ((a ^ b) v (c ^ a)) *)
 let example_1 = Or( And( P("a"), P("b") ), And( P("c"), P("a") ) );;
 
-print_int (size example_1);;
-print_int (height example_1);;
-print_set_str (letters example_1);;
+let rho_1 s =
+    match s with
+    | "a" -> true
+    | "b" -> false
+    | "c" -> false
+    | "d" -> true
+    | _   -> false
+;;
+
+print_string "Example 1: "; print_prop example_1;
+print "\n";
+
+print_string "Height: "; print_int (size example_1);;
+print_string "Size: "; print_int (height example_1);;
+print_string "Letters (set): "; print_set_str (letters example_1);;
+print "\n";
+
+print_string "Truth (rho_1): "; print_bool (truth example_1 rho_1);;
