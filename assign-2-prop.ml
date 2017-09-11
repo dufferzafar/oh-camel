@@ -184,6 +184,73 @@ let rec nnf p =
         | Implies (p1, p2) -> And (nnf p1, nnf (Not p2))
 
 (*
+    Convert a proposition into conjunctive normal form (POS)
+    as a (conjunctive) set of clauses
+    where each clause is considered as a (disjunctive) set of literals
+    (which are either propositional letters or their negation)
+
+    Note: Literals are a subset of prop.
+*)
+
+(* Standard OR distribution law *)
+let rec or_distribution p1 p2 =
+    match (p1, p2) with
+    | (q, And (q1, q2)) -> And (or_distribution q q1, or_distribution q q2)
+    | (And (q1, q2), q) -> And (or_distribution q1 q, or_distribution q2 q)
+    | (q1, q2)          -> Or (q1, q2)
+
+(*
+    cnf_prop: prop -> prop
+
+    Convert a proposition into its CNF
+*)
+let rec cnf_prop p =
+    let q = nnf p
+    in
+    match q with
+    | P s          -> p
+    | T            -> p
+    | F            -> p
+    | Not p1       -> p
+    | And (p1, p2) -> And (cnf_prop p1, cnf_prop p2)
+    | Or (p1, p2)  -> or_distribution (cnf_prop p1) (cnf_prop p2)
+
+    (*
+        This case was added because of in-exhaustive matching warning
+
+        It will never be called because of conversion to nnf before cnf
+    *)
+    | Implies (p1, p2) -> p
+;;
+
+(*
+    cnf_remove_or: prop -> list
+
+    Remove all OR connectives from a proposition and return a list of
+    literals involved
+*)
+let rec cnf_remove_or p =
+    match p with
+    | Or (p1, p2) -> (cnf_remove_or p1) @ (cnf_remove_or p2)
+    | q           -> [q];;
+
+(*
+    cnf_remove_and: prop -> list
+
+    Remove all AND connectives from a proposition and return a list of
+    literals involved
+*)
+let rec cnf_remove_and p =
+    match p with
+    | And (p1, p2) -> (cnf_remove_and p1) @ (cnf_remove_and p2)
+    | q            -> [cnf_remove_or q];;
+
+(*
+    cnf: prop -> (prop set set)
+*)
+let cnf p = (cnf_remove_and (cnf_prop p));;
+
+(*
     Examples of some propositions
 
     Used for testing throughout the assignment
@@ -212,6 +279,8 @@ print "";
 print_string "NNF: ";           print_prop (nnf prop_ex_1);
 print "\n";
 
+print_string "CNF: ";           print_prop (cnf_prop prop_ex_1);
+print "\n";
 
 print_string "Height: ";        print_int (size prop_ex_1);;
 print_string "Size: ";          print_int (height prop_ex_1);;
@@ -227,6 +296,9 @@ print_string "Ex 2: ";          print_prop prop_ex_2;
 print "";
 
 print_string "NNF: ";           print_prop (nnf prop_ex_2);
+print "\n";
+
+print_string "CNF: ";           print_prop (cnf_prop prop_ex_2);
 print "\n";
 
 print_string "Height: ";        print_int (size prop_ex_2);;
