@@ -323,6 +323,83 @@ let rec dnf_remove_or p =
 *)
 let dnf p = (dnf_remove_or (dnf_prop p));;
 
+(*
+    clause_truth: prop -> (string -> bool) -> bool
+
+    evaluates a clause with respect to a given
+    truth assignment to the propositional letters
+
+    A clause is a set of literals as returned in output of CNF
+*)
+let rec clause_truth clause_literals rho =
+    match clause_literals with
+    | []   -> false
+    | h::t -> truth h rho || (clause_truth t rho)
+;;
+
+(*
+    isTautology: prop -> bool
+
+    checks if a proposition is a tautology
+
+    TODO: Figure out how to handle rho!?
+*)
+let isTautology p =
+    let q = cnf p in
+        List.fold_left (fun acc clause -> clause_truth clause && acc) true q
+;;
+
+(*
+    term_truth: prop -> (string -> bool) -> bool
+
+    evaluates a term with respect to a given
+    truth assignment to the propositional letters
+
+    A term is a set of literals as returned in output of DNF
+*)
+let rec term_truth term_literals rho =
+    match term_literals with
+    | []   -> false
+    | h::t -> truth h rho || (term_truth t rho)
+;;
+
+(*
+    isContradiction: prop -> bool
+
+    checks if a proposition is a contradiction
+
+    TODO: Figure out how to handle rho!?
+*)
+let isContradiction p =
+    let q = dnf p in
+        List.fold_left (fun acc term -> term_truth term && acc) true q
+;;
+
+(*
+    isSatisfiable: prop -> bool
+
+    checks if a proposition is satisfiable
+*)
+let isSatisfiable p = not (isTautology (Not p));;
+
+(*
+    isEquivalent: prop -> prop -> bool
+
+    checks if two propositions are logically equivalent
+*)
+let isEquivalent p1 p2 = isTautology( And( Implies(p1, p2), Implies(p2, p1) ) );;
+
+(*
+    entails: prop -> prop -> bool
+
+    checks if the second proposition is a logical consequence of the first
+*)
+let entails p1 p2 = isTautology (Implies (p1, p2));;
+
+(*
+    =====================================================
+    =====================================================
+*)
 
 (*
     Examples of some propositions
