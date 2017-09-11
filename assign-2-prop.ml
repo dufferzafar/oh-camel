@@ -182,11 +182,14 @@ let rec nnf p =
         | And (p1, p2)     -> Or (nnf (Not p1), nnf (Not p2))
         | Or (p1, p2)      -> And (nnf (Not p1), nnf (Not p2))
         | Implies (p1, p2) -> And (nnf p1, nnf (Not p2))
+;;
 
 (*
+    CNF
+
     Convert a proposition into conjunctive normal form (POS)
     as a (conjunctive) set of clauses
-    where each clause is considered as a (disjunctive) set of literals
+    where each clause is a (disjunctive) set of literals
     (which are either propositional letters or their negation)
 
     Note: Literals are a subset of prop.
@@ -198,6 +201,7 @@ let rec or_distribution p1 p2 =
     | (q, And (q1, q2)) -> And (or_distribution q q1, or_distribution q q2)
     | (And (q1, q2), q) -> And (or_distribution q1 q, or_distribution q2 q)
     | (q1, q2)          -> Or (q1, q2)
+;;
 
 (*
     cnf_prop: prop -> prop
@@ -205,13 +209,12 @@ let rec or_distribution p1 p2 =
     Convert a proposition into its CNF
 *)
 let rec cnf_prop p =
-    let q = nnf p
-    in
+    let q = nnf p in
     match q with
-    | P s          -> p
-    | T            -> p
-    | F            -> p
-    | Not p1       -> p
+    | P s          -> q
+    | T            -> q
+    | F            -> q
+    | Not p1       -> q
     | And (p1, p2) -> And (cnf_prop p1, cnf_prop p2)
     | Or (p1, p2)  -> or_distribution (cnf_prop p1) (cnf_prop p2)
 
@@ -220,7 +223,7 @@ let rec cnf_prop p =
 
         It will never be called because of conversion to nnf before cnf
     *)
-    | Implies (p1, p2) -> p
+    | Implies (p1, p2) -> q
 ;;
 
 (*
@@ -232,7 +235,8 @@ let rec cnf_prop p =
 let rec cnf_remove_or p =
     match p with
     | Or (p1, p2) -> (cnf_remove_or p1) @ (cnf_remove_or p2)
-    | q           -> [q];;
+    | q           -> [q]
+;;
 
 (*
     cnf_remove_and: prop -> list
@@ -243,7 +247,8 @@ let rec cnf_remove_or p =
 let rec cnf_remove_and p =
     match p with
     | And (p1, p2) -> (cnf_remove_and p1) @ (cnf_remove_and p2)
-    | q            -> [cnf_remove_or q];;
+    | q            -> [cnf_remove_or q]
+;;
 
 (*
     cnf: prop -> (prop set set)
