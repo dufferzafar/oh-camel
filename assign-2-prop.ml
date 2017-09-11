@@ -256,6 +256,75 @@ let rec cnf_remove_and p =
 let cnf p = (cnf_remove_and (cnf_prop p));;
 
 (*
+    DNF
+
+    Convert a proposition into disjunctive normal form (SOP)
+    as a (disjunctive) set of terms
+    where each clause is a (disjunctive) set of literals
+    (which are either propositional letters or their negation).
+
+    Note: Literals are a subset of prop.
+*)
+
+(* Standard And distribution law *)
+let rec and_distribution p1 p2 =
+    match (p1,p2) with
+    | (q, Or (q1, q2))  -> Or (and_distribution q q1, and_distribution q q2)
+    |  (Or (q1, q2), q) -> Or (and_distribution q1 q, and_distribution q2 q)
+    | (q1, q2)          -> And (q1, q2) ;;
+
+(*
+    dnf_prop: prop -> prop
+
+    Convert a proposition into its DNF
+*)
+let rec dnf_prop p =
+    let q = nnf p in
+    match q with
+    | P s          -> q
+    | T            -> q
+    | F            -> q
+    | Not p1       -> q
+    | And (p1, p2) -> and_distribution (dnf_prop p1)  (dnf_prop p2)
+    | Or (p1, p2)  -> Or (dnf_prop p1, dnf_prop p2)
+
+    (*
+        This case was added because of in-exhaustive matching warning
+
+        It will never be called because of conversion to nnf before dnf
+    *)
+    | Implies (p1, p2) -> q
+;;
+
+(*
+    dnf_remove_and: prop -> list
+
+    Remove all AND connectives from a proposition and return a list of
+    literals involved
+*)
+let rec dnf_remove_and p =
+    match p with
+    | And (p1, p2) -> (dnf_remove_and p1) @ (dnf_remove_and p2)
+    | q            -> [q];;
+
+(*
+    dnf_remove_or: prop -> list
+
+    Remove all OR connectives from a proposition and return a list of
+    literals involved
+*)
+let rec dnf_remove_or p =
+    match p with
+    | Or (p1, p2) -> (dnf_remove_or p1) @ (dnf_remove_or p2)
+    | q           -> [dnf_remove_and q];;
+
+(*
+    dnf: prop -> (prop set set)
+*)
+let dnf p = (dnf_remove_or (dnf_prop p));;
+
+
+(*
     Examples of some propositions
 
     Used for testing throughout the assignment
@@ -287,6 +356,9 @@ print "\n";
 print_string "CNF: ";           print_prop (cnf_prop prop_ex_1);
 print "\n";
 
+print_string "DNF: ";           print_prop (dnf_prop prop_ex_1);
+print "\n";
+
 print_string "Height: ";        print_int (size prop_ex_1);;
 print_string "Size: ";          print_int (height prop_ex_1);;
 print_string "Letters (set): "; print_set_str (letters prop_ex_1);;
@@ -304,6 +376,9 @@ print_string "NNF: ";           print_prop (nnf prop_ex_2);
 print "\n";
 
 print_string "CNF: ";           print_prop (cnf_prop prop_ex_2);
+print "\n";
+
+print_string "DNF: ";           print_prop (dnf_prop prop_ex_2);
 print "\n";
 
 print_string "Height: ";        print_int (size prop_ex_2);;
