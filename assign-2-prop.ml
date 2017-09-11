@@ -176,8 +176,8 @@ let rec nnf p =
     (* All logic below is "inverted" *)
     | Not q           -> match q with
         | P s              -> p
-        | T                -> T
-        | F                -> F
+        | T                -> F
+        | F                -> T
         | Not p1           -> nnf p1
         | And (p1, p2)     -> Or (nnf (Not p1), nnf (Not p2))
         | Or (p1, p2)      -> And (nnf (Not p1), nnf (Not p2))
