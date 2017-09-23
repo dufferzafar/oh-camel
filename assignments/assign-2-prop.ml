@@ -324,55 +324,45 @@ let rec dnf_remove_or p =
 let dnf p = (dnf_remove_or (dnf_prop p));;
 
 (*
-    clause_truth: prop -> (string -> bool) -> bool
-
-    evaluates a clause with respect to a given
-    truth assignment to the propositional letters
-
-    A clause is a set of literals as returned in output of CNF
+    clause_truth: list (prop set) -> bool
 *)
-let rec clause_truth clause_literals rho =
-    match clause_literals with
-    | []   -> false
-    | h::t -> truth h rho || (clause_truth t rho)
+let clause_tautology clause_literals =
+    (* A clause is a tautology when: *)
+    (* 1. Any of the literal in the clause is T *)
+    List.mem T clause_literals
+    (* or 2. A clause contains a literal and its complement both *)
+    || List.fold_left (fun acc lit -> (List.mem (nnf(Not lit)) clause_literals) || acc) false clause_literals
 ;;
 
 (*
     isTautology: prop -> bool
 
     checks if a proposition is a tautology
-
-    TODO: Figure out how to handle rho!?
 *)
 let isTautology p =
     let q = cnf p in
-        List.fold_left (fun acc clause -> clause_truth clause && acc) true q
+        List.fold_left (fun acc clause_literals -> clause_tautology clause_literals && acc) true q
 ;;
 
 (*
-    term_truth: prop -> (string -> bool) -> bool
-
-    evaluates a term with respect to a given
-    truth assignment to the propositional letters
-
-    A term is a set of literals as returned in output of DNF
+    term_truth: list (prop set) -> bool
 *)
-let rec term_truth term_literals rho =
-    match term_literals with
-    | []   -> false
-    | h::t -> truth h rho || (term_truth t rho)
+let term_contradiction term_literals =
+    (* A term is a contradiction when: *)
+    (* 1. Any of the literal in the term is F *)
+    List.mem F term_literals
+    (* or 2. A term contains a literal and its complement both *)
+    || List.fold_left (fun acc lit -> (List.mem (nnf(Not lit)) term_literals) && acc) true term_literals
 ;;
 
 (*
     isContradiction: prop -> bool
 
     checks if a proposition is a contradiction
-
-    TODO: Figure out how to handle rho!?
 *)
 let isContradiction p =
-    let q = dnf p in
-        List.fold_left (fun acc term -> term_truth term && acc) true q
+    let q = cnf p in
+        List.fold_left (fun acc term_literals -> clause_tautology term_literals && acc) true q
 ;;
 
 (*
@@ -424,45 +414,55 @@ let rho_ex_1 s =
     | _   -> false
 ;;
 
-print_string "Ex 1: ";          print_prop prop_ex_1;
-print "";
+print_string "Ex 1: ";;          print_prop prop_ex_1;;
+print "";;
 
-print_string "NNF: ";           print_prop (nnf prop_ex_1);
-print "\n";
+print_string "NNF: ";;           print_prop (nnf prop_ex_1);;
+print "\n";;
 
-print_string "CNF: ";           print_prop (cnf_prop prop_ex_1);
-print "\n";
+print_string "CNF: ";;           print_prop (cnf_prop prop_ex_1);;
+print "\n";;
 
-print_string "DNF: ";           print_prop (dnf_prop prop_ex_1);
-print "\n";
+print_string "DNF: ";;           print_prop (dnf_prop prop_ex_1);;
+print "\n";;
 
-print_string "Height: ";        print_int (size prop_ex_1);;
-print_string "Size: ";          print_int (height prop_ex_1);;
-print_string "Letters (set): "; print_set_str (letters prop_ex_1);;
-print "\n";
+print_string "Tautology?: ";;    print_bool (isTautology(prop_ex_1));;
+print_string "Satisfiable?: ";;  print_bool (isSatisfiable(prop_ex_1));;
+print_string "Contradiction?: ";;  print_bool (isContradiction(prop_ex_1));;
+print "";;
 
-print_string "Truth (rho_ex_1): "; print_bool (truth prop_ex_1 rho_ex_1);;
-print "\n\n";
+print_string "Height: ";;        print_int (size prop_ex_1);;
+print_string "Size: ";;          print_int (height prop_ex_1);;
+print_string "Letters (set): ";; print_set_str (letters prop_ex_1);;
+print "\n";;
+
+print_string "Truth (rho_ex_1): ";; print_bool (truth prop_ex_1 rho_ex_1);;
+print "\n\n";;
 
 (* ============================================================================ *)
 
-print_string "Ex 2: ";          print_prop prop_ex_2;
-print "";
+print_string "Ex 2: ";;          print_prop prop_ex_2;;
+print "";;
 
-print_string "NNF: ";           print_prop (nnf prop_ex_2);
-print "\n";
+print_string "NNF: ";;           print_prop (nnf prop_ex_2);;
+print "\n";;
 
-print_string "CNF: ";           print_prop (cnf_prop prop_ex_2);
-print "\n";
+print_string "CNF: ";;           print_prop (cnf_prop prop_ex_2);;
+print "\n";;
 
-print_string "DNF: ";           print_prop (dnf_prop prop_ex_2);
-print "\n";
+print_string "DNF: ";;           print_prop (dnf_prop prop_ex_2);;
+print "\n";;
 
-print_string "Height: ";        print_int (size prop_ex_2);;
-print_string "Size: ";          print_int (height prop_ex_2);;
-print_string "Letters (set): "; print_set_str (letters prop_ex_2);;
-print "\n";
+print_string "Tautology?: ";;    print_bool (isTautology(prop_ex_2));;
+print_string "Satisfiable?: ";;  print_bool (isSatisfiable(prop_ex_2));;
+print_string "Contradiction?: ";;  print_bool (isContradiction(prop_ex_2));;
+print "";;
 
-print_string "Truth (rho_ex_1): "; print_bool (truth prop_ex_2 rho_ex_1);;
-print "\n";
+print_string "Height: ";;        print_int (size prop_ex_2);;
+print_string "Size: ";;          print_int (height prop_ex_2);;
+print_string "Letters (set): ";; print_set_str (letters prop_ex_2);;
+print "\n";;
+
+print_string "Truth (rho_ex_1): ";; print_bool (truth prop_ex_2 rho_ex_1);;
+print "\n";;
 
