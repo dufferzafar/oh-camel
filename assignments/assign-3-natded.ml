@@ -27,6 +27,12 @@ type prop =
 ;;
 
 (*
+    Set related helper functions
+*)
+
+let member x s = List.mem x s;
+
+(*
     =====================================================
     =====================================================
 *)
@@ -74,7 +80,7 @@ type prooftree =
 
 
 (*
-    ht: prooftree -> int
+    ht : prooftree -> int
 
     returns the height of a prooftree
     (counting from 0)
@@ -106,7 +112,7 @@ let rec ht pft =
 ;;
 
 (*
-    size: prooftree -> int
+    size : prooftree -> int
 
     returns the number of nodes / rules used in a prooftree
 *)
@@ -136,6 +142,19 @@ let rec size pft =
     | OrE (pft1, pft2, pft3, _) -> 1 + size pft1 + size pft2 + size pft3
 ;;
 
+(*
+    wfprooftree  : prooftree -> bool
+
+    checks whether a prooftree is indeed a well-formed proof tree
+    (by the rules of natural deduction)
+ *)
+let rec wfprooftree pft =
+    match pft with
+
+    | Ass (g, p) -> member p g
+    | TI _ | FE _ -> true
+;;
+
 
 (*
     =====================================================
@@ -150,6 +169,8 @@ let pft_1 = Ass(g_1, P("a"));;
 let pft_2 = OrIleft(pft_1, (g_1, P("b")));;
 
 let pft_ex_1 = pft_2;;
+
+print_string "Is Well formed?: ";;   print_bool (wfprooftree pft_1);;
 
 print_string "Height: ";;        print_int (ht pft_ex_1);;
 print_string "Size: ";;          print_int (size pft_ex_1);;

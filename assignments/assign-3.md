@@ -29,7 +29,10 @@
 -->
     3.3 wfprooftree : prooftree -> bool = <fun>
     
-    Define the function wfprooftree that check tat a given candidate proof tree is indeed a well-formed proof tree (i.e., the main formula is of the form expected by the rule, the side formulas are consistent with the main formula, and the extra formulas agree as specified in each rule).
+    Define the function wfprooftree that check tat a given candidate proof tree is indeed a well-formed proof tree: 
+        - the main formula is of the form expected by the rule
+        - the side formulas are consistent with the main formula
+        - the extra formulas agree as specified in each rule
 
     3.4 pad : prooftree -> prop list -> prooftree = <fun>
     
