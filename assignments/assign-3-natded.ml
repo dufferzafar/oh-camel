@@ -334,6 +334,31 @@ let rec wfprooftree pft =
         | _ -> false
     )
 
+    | OrE (pft1, pft2, pft3, (g, p)) ->
+
+    wfprooftree pft1 &&
+    wfprooftree pft2 &&
+    wfprooftree pft3 &&
+    (
+        let (g1, p1) = root pft1 in
+        let (g2, p2) = root pft2 in
+        let (g3, p3) = root pft3 in
+
+        (* the main formula is of the form expected by the rule *)
+        match p1 with
+        | Or (q1, q2) ->
+
+            (* the side formulas are consistent with the main formula *)
+            p = p2 && p = p3
+
+            (* the extra formulas agree as specified in each rule *)
+            && equalset g g1
+            && equalset (q1::g) g2
+            && equalset (q2::g) g3
+
+        | _ -> false
+    )
+
     (* Will be removed once all other cases have been handled *)
     | _ -> false
 ;;
@@ -390,6 +415,13 @@ let pft_OrIright = OrIright(
     (g_1, Or( P("a"), P("b") ) )
 );;
 
+let pft_OrE = OrE(
+    pft_OrIleft,
+    Ass(g_1, P("c")),
+    Ass(g_1, P("c")),
+    (g_1, P("c"))
+);;
+
 print "Is Well Formed?";;
 print "";;
 print_string "1 - Assumption:\t\t\t";;             print_bool (wfprooftree pft_Ass);;
@@ -403,5 +435,11 @@ print_string "6 - And Introduction:\t\t";;         print_bool (wfprooftree pft_A
 print_string "7 - And Elimination (left):\t";;     print_bool (wfprooftree pft_AndEleft);;
 print_string "8 - And Elimination (right):\t";;    print_bool (wfprooftree pft_AndEright);;
 print "";;
-print_string "10 - Or Introduction (left):\t";;    print_bool (wfprooftree pft_OrIleft);;
-print_string "11 - Or Introduction (right):\t";;   print_bool (wfprooftree pft_OrIright);;
+print_string "9  - Or Introduction (left):\t";;    print_bool (wfprooftree pft_OrIleft);;
+print_string "10 - Or Introduction (right):\t";;   print_bool (wfprooftree pft_OrIright);;
+print_string "11 - Or Elimination:\t\t";;          print_bool (wfprooftree pft_OrE);;
+print "";;
+(* print_string "12 - Not Classical:\t\t";;           print_bool (wfprooftree pft_Ass);;
+print_string "13 - Not Intutionistic:\t\t";;       print_bool (wfprooftree pft_Ass);;
+print "";;
+ *)
