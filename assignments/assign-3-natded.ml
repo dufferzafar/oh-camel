@@ -296,6 +296,43 @@ let rec wfprooftree pft =
         | _ -> false
     )
 
+    | OrIleft (pft1, (g, p)) ->
+
+    wfprooftree pft1 &&
+    (
+        let (g1, p1) = root pft1 in
+
+        (* the main formula is of the form expected by the rule *)
+        match p with
+        | Or (q1, q2) ->
+
+            (* the side formulas are consistent with the main formula *)
+            q1 = p1
+
+            (* the extra formulas agree as specified in each rule *)
+            && equalset g g1
+
+        | _ -> false
+    )
+
+    | OrIright (pft1, (g, p)) ->
+
+    wfprooftree pft1 &&
+    (
+        let (g1, p1) = root pft1 in
+
+        (* the main formula is of the form expected by the rule *)
+        match p with
+        | Or (q1, q2) ->
+
+            (* the side formulas are consistent with the main formula *)
+            q2 = p1
+
+            (* the extra formulas agree as specified in each rule *)
+            && equalset g g1
+
+        | _ -> false
+    )
 
     (* Will be removed once all other cases have been handled *)
     | _ -> false
@@ -343,6 +380,16 @@ let pft_AndEright = AndEright(
     ( g_1, P("b") )
 );;
 
+let pft_OrIleft = OrIleft(
+    Ass(g_1, P("a")),
+    (g_1, Or( P("a"), P("b") ) )
+);;
+
+let pft_OrIright = OrIright(
+    Ass(g_1, P("b")),
+    (g_1, Or( P("a"), P("b") ) )
+);;
+
 print "Is Well Formed?";;
 print "";;
 print_string "1 - Assumption:\t\t\t";;             print_bool (wfprooftree pft_Ass);;
@@ -356,3 +403,5 @@ print_string "6 - And Introduction:\t\t";;         print_bool (wfprooftree pft_A
 print_string "7 - And Elimination (left):\t";;     print_bool (wfprooftree pft_AndEleft);;
 print_string "8 - And Elimination (right):\t";;    print_bool (wfprooftree pft_AndEright);;
 print "";;
+print_string "10 - Or Introduction (left):\t";;    print_bool (wfprooftree pft_OrIleft);;
+print_string "11 - Or Introduction (right):\t";;   print_bool (wfprooftree pft_OrIright);;
