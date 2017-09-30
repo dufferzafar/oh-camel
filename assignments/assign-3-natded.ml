@@ -189,7 +189,53 @@ let rec wfprooftree pft =
     match pft with
 
     | Ass (g, p) -> member p g
-    | TI _ | FE _ -> true
+
+    | TI _ -> true
+
+    | FE (g, p) -> member F g
+
+    | ImpI (pft1, (g, p)) ->
+    wfprooftree pft1 &&
+    (
+        let (g1, p1) = root pft1 in
+
+        (* the main formula is of the form expected by the rule *)
+        match p with
+        | Implies (q1, q2) ->
+
+            (* the side formulas are consistent with the main formula *)
+            q2 = p1
+
+            (* the extra formulas agree as specified in each rule *)
+            && equalset (q1::g) g1
+
+        | _ -> false
+    )
+
+    | ImpE (pft1, pft2, (g, p)) ->
+    wfprooftree pft1 &&
+    wfprooftree pft2 &&
+    (
+        let (g1, p1) = root pft1 in
+        let (g2, p2) = root pft2 in
+
+        (* the main formula is of the form expected by the rule *)
+        match p1 with
+        | Implies (q1, q2) ->
+
+            (* the side formulas are consistent with the main formula *)
+            q1 = p2 && q2 = p
+
+            (* the extra formulas agree as specified in each rule *)
+            && equalset g g1
+            && equalset g1 g2
+
+        | _ -> false
+
+    )
+
+    (* Will be removed once all other cases have been handled *)
+    | _ -> false
 ;;
 
 
