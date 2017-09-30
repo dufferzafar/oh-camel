@@ -345,14 +345,14 @@ let pft_AndEright = AndEright(
 
 print "Is Well Formed?";;
 print "";;
-print_string "Assumption: ";;                    print_bool (wfprooftree pft_Ass);;
-print_string "True Introduction: ";;             print_bool (wfprooftree pft_TI);;
-print_string "False Elimination: ";;             print_bool (wfprooftree pft_FE);;
+print_string "1 - Assumption:\t\t\t";;             print_bool (wfprooftree pft_Ass);;
+print_string "2 - True Introduction:\t\t";;        print_bool (wfprooftree pft_TI);;
+print_string "3 - False Elimination:\t\t";;        print_bool (wfprooftree pft_FE);;
 print "";;
-print_string "Implies Introduction: ";;          print_bool (wfprooftree pft_ImpI);;
-print_string "Implies Elimination: ";;           print_bool (wfprooftree pft_ImpE);;
+print_string "4 - Implies Introduction:\t";;       print_bool (wfprooftree pft_ImpI);;
+print_string "5 - Implies Elimination:\t";;        print_bool (wfprooftree pft_ImpE);;
 print "";;
-print_string "And Introduction: ";;              print_bool (wfprooftree pft_AndI);;
-print_string "And Elimination (left): ";;        print_bool (wfprooftree pft_AndEleft);;
-print_string "And Elimination (right): ";;       print_bool (wfprooftree pft_AndEright);;
+print_string "6 - And Introduction:\t\t";;         print_bool (wfprooftree pft_AndI);;
+print_string "7 - And Elimination (left):\t";;     print_bool (wfprooftree pft_AndEleft);;
+print_string "8 - And Elimination (right):\t";;    print_bool (wfprooftree pft_AndEright);;
 print "";;
