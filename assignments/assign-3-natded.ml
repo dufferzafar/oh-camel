@@ -31,6 +31,8 @@ type prop =
 *)
 
 let member x s = List.mem x s;;
+let rec remove x s = List.filter (fun a -> a <> x) s;;
+
 let rec subset s1 s2 =
     match s1 with
         [] -> true
@@ -427,6 +429,56 @@ let rec pad pft d =
 
     (* Rules involving 3 Proof Trees *)
     | OrE (pft1, pft2, pft3, (g, p)) -> OrE (pad pft1 d, pad pft2 d, pad pft3 d, (union g d, p))
+;;
+
+(*
+    pare : prooftree -> prooftree
+
+    returns a well-formed proof tree with minimal assumptions in each sequent
+*)
+
+exception NotWellFormed;;
+
+let rec pare pft =
+    match pft with
+
+    (* Base Cases *)
+    | Ass (g, p) -> Ass ([p], p)
+    | TI (g, p)  -> TI  ([ ], p)
+    | FE (g, p)  -> FE  ([F], p)
+
+    | ImpI (pft1, (g, p)) ->
+    (
+        let pared = pare pft1 in
+        let (g1, p1) = root pared in
+
+        match p with
+        | Implies (q1, q2) -> ImpI (pared, (remove q1 g1, p))
+
+        | _                -> raise NotWellFormed
+    )
+
+    | ImpE (pft1, pft2, (g, p)) ->
+        ImpE (pft1, pft2, (g, p))
+
+    | AndI (pft1, pft2, (g, p)) ->
+        AndI (pft1, pft2, (g, p))
+    | AndEleft (pft1, (g, p)) ->
+        AndEleft (pft1, (g, p))
+    | AndEright (pft1, (g, p)) ->
+        AndEright (pft1, (g, p))
+
+    | OrIleft (pft1, (g, p)) ->
+        OrIleft (pft1, (g, p))
+    | OrIright (pft1, (g, p)) ->
+        OrIright (pft1, (g, p))
+    | OrE (pft1, pft2, pft3, (g, p)) ->
+        OrE (pft1, pft2, pft3, (g, p))
+
+    | NotClass (pft1, (g, p)) ->
+        NotClass (pft1, (g, p))
+    | NotIntu (pft1, (g, p)) ->
+        NotIntu (pft1, (g, p))
 ;;
 
 
