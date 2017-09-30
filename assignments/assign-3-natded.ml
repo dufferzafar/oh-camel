@@ -258,6 +258,45 @@ let rec wfprooftree pft =
         | _ -> false
     )
 
+    | AndEleft (pft1, (g, p)) ->
+
+    wfprooftree pft1 &&
+    (
+        let (g1, p1) = root pft1 in
+
+        (* the main formula is of the form expected by the rule *)
+        match p1 with
+        | And (q1, q2) ->
+
+            (* the side formulas are consistent with the main formula *)
+            q1 = p
+
+            (* the extra formulas agree as specified in each rule *)
+            && equalset g g1
+
+        | _ -> false
+    )
+
+    | AndEright (pft1, (g, p)) ->
+
+    wfprooftree pft1 &&
+    (
+        let (g1, p1) = root pft1 in
+
+        (* the main formula is of the form expected by the rule *)
+        match p1 with
+        | And (q1, q2) ->
+
+            (* the side formulas are consistent with the main formula *)
+            q2 = p
+
+            (* the extra formulas agree as specified in each rule *)
+            && equalset g g1
+
+        | _ -> false
+    )
+
+
     (* Will be removed once all other cases have been handled *)
     | _ -> false
 ;;
@@ -293,11 +332,25 @@ let pft_AndI = AndI(
     ( g_1, And( P("a"), P("b") ) )
 );;
 
+let pft_AndEleft = AndEleft(
+    pft_AndI,
+    ( g_1, P("a") )
+);;
+
+let pft_AndEright = AndEright(
+    pft_AndI,
+    ( g_1, P("b") )
+);;
+
 print "Is Well Formed?";;
 print "";;
-print_string "Assumption: ";;              print_bool (wfprooftree pft_Ass);;
-print_string "False Elimination: ";;       print_bool (wfprooftree pft_FE);;
-print_string "Implies Introduction: ";;    print_bool (wfprooftree pft_ImpI);;
-print_string "Implies Elimination: ";;     print_bool (wfprooftree pft_ImpE);;
-print_string "And Introduction: ";;        print_bool (wfprooftree pft_AndI);;
+print_string "Assumption: ";;                    print_bool (wfprooftree pft_Ass);;
+print_string "False Elimination: ";;             print_bool (wfprooftree pft_FE);;
+print "";;
+print_string "Implies Introduction: ";;          print_bool (wfprooftree pft_ImpI);;
+print_string "Implies Elimination: ";;           print_bool (wfprooftree pft_ImpE);;
+print "";;
+print_string "And Introduction: ";;              print_bool (wfprooftree pft_AndI);;
+print_string "And Elimination (left): ";;        print_bool (wfprooftree pft_AndEleft);;
+print_string "And Elimination (right): ";;       print_bool (wfprooftree pft_AndEright);;
 print "";;
