@@ -359,8 +359,33 @@ let rec wfprooftree pft =
         | _ -> false
     )
 
+    | NotIntu (pft1, (g, p)) ->
+
+    wfprooftree pft1 &&
+    (
+        let (g1, p1) = root pft1 in
+
+        (* the side formulas are consistent with the main formula *)
+        p1 = F
+
+        (* the extra formulas agree as specified in each rule *)
+        && equalset g g1
+    )
+
+    | NotClass (pft1, (g, p)) ->
+
+    wfprooftree pft1 &&
+    (
+        let (g1, p1) = root pft1 in
+
+        (* the side formulas are consistent with the main formula *)
+        p1 = F
+
+        (* the extra formulas agree as specified in each rule *)
+        && ( equalset (Not(p)::g) g1 || equalset (Implies(p, F)::g) g1 )
+    )
+
     (* Will be removed once all other cases have been handled *)
-    | _ -> false
 ;;
 
 
@@ -422,6 +447,16 @@ let pft_OrE = OrE(
     (g_1, P("c"))
 );;
 
+let pft_NotIntu = NotIntu(
+    Ass([F], F),
+    ([F], P("z"))
+);;
+
+let pft_NotClass = NotClass(
+    Ass([Not(P("a")); F], F),
+    ([Not(P("a")); F], P("a"))
+);;
+
 print "Is Well Formed?";;
 print "";;
 print_string "1 - Assumption:\t\t\t";;             print_bool (wfprooftree pft_Ass);;
@@ -439,7 +474,6 @@ print_string "9  - Or Introduction (left):\t";;    print_bool (wfprooftree pft_O
 print_string "10 - Or Introduction (right):\t";;   print_bool (wfprooftree pft_OrIright);;
 print_string "11 - Or Elimination:\t\t";;          print_bool (wfprooftree pft_OrE);;
 print "";;
-(* print_string "12 - Not Classical:\t\t";;           print_bool (wfprooftree pft_Ass);;
-print_string "13 - Not Intutionistic:\t\t";;       print_bool (wfprooftree pft_Ass);;
+print_string "12 - Not Classical:\t\t";;           print_bool (wfprooftree pft_NotClass);;
+print_string "13 - Not Intutionistic:\t\t";;       print_bool (wfprooftree pft_NotIntu);;
 print "";;
- *)
