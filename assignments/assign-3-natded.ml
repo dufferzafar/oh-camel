@@ -30,7 +30,13 @@ type prop =
     Set related helper functions
 *)
 
-let member x s = List.mem x s;
+let member x s = List.mem x s;;
+let rec subset s1 s2 =
+    match s1 with
+        [] -> true
+    | h::t -> member h s2 && subset t s2
+;;
+let rec equalset s1 s2 = subset s1 s2 && subset s2 s1;;
 
 (*
     =====================================================
