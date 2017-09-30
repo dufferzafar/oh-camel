@@ -190,7 +190,7 @@ let rec wfprooftree pft =
 
     | Ass (g, p) -> member p g
 
-    | TI _ -> true
+    | TI (g, p) -> p = T
 
     | FE (g, p) -> member F g
 
@@ -313,6 +313,7 @@ let rec wfprooftree pft =
 let g_1 = [P("a"); P("b"); P("c")]
 
 let pft_Ass = Ass(g_1, P("b"));;
+let pft_TI = TI(g_1, T);;
 let pft_FE = FE(F::g_1, P "z");;
 
 let pft_ImpI = ImpI(
@@ -345,6 +346,7 @@ let pft_AndEright = AndEright(
 print "Is Well Formed?";;
 print "";;
 print_string "Assumption: ";;                    print_bool (wfprooftree pft_Ass);;
+print_string "True Introduction: ";;             print_bool (wfprooftree pft_TI);;
 print_string "False Elimination: ";;             print_bool (wfprooftree pft_FE);;
 print "";;
 print_string "Implies Introduction: ";;          print_bool (wfprooftree pft_ImpI);;
