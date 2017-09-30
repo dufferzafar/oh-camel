@@ -247,13 +247,26 @@ let rec wfprooftree pft =
 (*
     Examples of some prooftrees
 *)
-let g_1 = [P("a"); P("b")]
-let pft_1 = Ass(g_1, P("a"));;
-let pft_2 = OrIleft(pft_1, (g_1, P("b")));;
+let g_1 = [P("a"); P("b"); P("c")]
 
-let pft_ex_1 = pft_2;;
+let pft_Ass = Ass(g_1, P("b"));;
+let pft_FE = FE(F::g_1, P "z");;
 
-print_string "Is Well formed?: ";;   print_bool (wfprooftree pft_1);;
+let pft_ImpI = ImpI(
+    pft_Ass,
+    ( g_1, Implies( P("a"), P("b") ) )
+);;
 
-print_string "Height: ";;        print_int (ht pft_ex_1);;
-print_string "Size: ";;          print_int (size pft_ex_1);;
+let pft_ImpE = ImpE(
+    pft_ImpI,
+    Ass(g_1, P("a")),
+    ( g_1, P("b") )
+);;
+
+print "Is Well Formed?";;
+print "";;
+print_string "Assumption: ";;              print_bool (wfprooftree pft_Ass);;
+print_string "False Elimination: ";;       print_bool (wfprooftree pft_FE);;
+print_string "Implies Introduction: ";;    print_bool (wfprooftree pft_ImpI);;
+print_string "Implies Elimination: ";;     print_bool (wfprooftree pft_ImpE);;
+print "";;
