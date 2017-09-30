@@ -143,6 +143,37 @@ let rec size pft =
 ;;
 
 (*
+    root : prooftree -> sequent
+
+    returns the root sequent of a proof tree
+*)
+let root pft =
+    match pft with
+
+    (* Base cases *)
+    | Ass seq | TI seq | FE seq -> seq
+
+    (* Rules involving 1 Proof Tree *)
+    | ImpI (_, seq)
+
+    | AndEleft (_, seq)
+    | AndEright (_, seq)
+
+    | OrIleft (_, seq)
+    | OrIright (_, seq)
+
+    | NotClass (_, seq)
+    | NotIntu (_, seq)          -> seq
+
+    (* Rules involving 2 Proof Trees *)
+    | ImpE (_, _, seq)
+    | AndI (_, _, seq)          -> seq
+
+    (* Rules involving 3 Proof Trees *)
+    | OrE (_, _, _, seq)        -> seq
+;;
+
+(*
     wfprooftree  : prooftree -> bool
 
     checks whether a prooftree is indeed a well-formed proof tree
