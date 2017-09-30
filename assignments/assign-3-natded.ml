@@ -37,6 +37,15 @@ let rec subset s1 s2 =
     | h::t -> member h s2 && subset t s2
 ;;
 let rec equalset s1 s2 = subset s1 s2 && subset s2 s1;;
+let rec union s1 s2 =
+    match s1 with
+        [] -> s2
+    | h::t ->
+        if member h s2 then
+            union t s2
+        else
+            h :: (union t s2)
+;;
 
 (*
     =====================================================
@@ -184,7 +193,7 @@ let root pft =
 
     checks whether a prooftree is indeed a well-formed proof tree
     (by the rules of natural deduction)
- *)
+*)
 let rec wfprooftree pft =
     match pft with
 
@@ -384,8 +393,40 @@ let rec wfprooftree pft =
         (* the extra formulas agree as specified in each rule *)
         && ( equalset (Not(p)::g) g1 || equalset (Implies(p, F)::g) g1 )
     )
+;;
 
-    (* Will be removed once all other cases have been handled *)
+(*
+    pad : prooftree -> prop list -> prooftree
+
+    creates a new proof tree with the set of additional assumptions
+    added at each node.
+*)
+let rec pad pft d =
+    match pft with
+
+    (* Base Cases *)
+    | Ass (g, p) -> Ass (union g d, p)
+    | TI (g, p) -> TI (union g d, p)
+    | FE (g, p) -> FE (union g d, p)
+
+    (* Rules involving 1 Proof Tree *)
+    | ImpI (pft1, (g, p)) -> ImpI (pad pft1 d, (union g d, p))
+
+    | AndEleft (pft1, (g, p)) -> AndEleft (pad pft1 d, (union g d, p))
+    | AndEright (pft1, (g, p)) -> AndEright (pad pft1 d, (union g d, p))
+
+    | OrIleft (pft1, (g, p)) -> OrIleft (pad pft1 d, (union g d, p))
+    | OrIright (pft1, (g, p)) -> OrIright (pad pft1 d, (union g d, p))
+
+    | NotClass (pft1, (g, p)) -> NotClass (pad pft1 d, (union g d, p))
+    | NotIntu (pft1, (g, p)) -> NotIntu (pad pft1 d, (union g d, p))
+
+    (* Rules involving 2 Proof Trees *)
+    | ImpE (pft1, pft2, (g, p)) -> ImpE (pad pft1 d, pad pft2 d, (union g d, p))
+    | AndI (pft1, pft2, (g, p)) -> AndI (pad pft1 d, pad pft2 d, (union g d, p))
+
+    (* Rules involving 3 Proof Trees *)
+    | OrE (pft1, pft2, pft3, (g, p)) -> OrE (pad pft1 d, pad pft2 d, pad pft3 d, (union g d, p))
 ;;
 
 
@@ -457,6 +498,11 @@ let pft_NotClass = NotClass(
     ([Not(P("a")); F], P("a"))
 );;
 
+let pft_pad = Ass(
+    [P("a"); P("b"); P("c"); P("d")],
+    P("b")
+);;
+
 print "Is Well Formed?";;
 print "";;
 print_string "1 - Assumption:\t\t\t";;             print_bool (wfprooftree pft_Ass);;
@@ -476,4 +522,8 @@ print_string "11 - Or Elimination:\t\t";;          print_bool (wfprooftree pft_O
 print "";;
 print_string "12 - Not Classical:\t\t";;           print_bool (wfprooftree pft_NotClass);;
 print_string "13 - Not Intutionistic:\t\t";;       print_bool (wfprooftree pft_NotIntu);;
+print "\n----\n";;
+
+print "Pad";;
 print "";;
+print_string "Padded tree is correct?\t\t";;       print_bool (pft_pad = pad pft_Ass [P("d")]);;
