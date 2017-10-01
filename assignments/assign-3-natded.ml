@@ -698,10 +698,10 @@ let rec normalise pft =
     | AndEleft(  AndI(pft1, pft2, (g1, p1)), (g, p) ) -> pft1
     | AndEright( AndI(pft1, pft2, (g1, p1)), (g, p) ) -> pft2
 
-    | ImpE( ImpI(pft1, (g1, p1)), pft2, (g, p) ) -> pft1
+    | ImpE( ImpI(pft1, (g1, p1)), pft2, (g, p) ) -> graft pft1 [pft2]
 
-    | OrE ( OrIleft (pft1, (g1, p1)), pft2, pft3, (g, p)) -> pft1
-    | OrE ( OrIright(pft1, (g1, p1)), pft2, pft3, (g, p)) -> pft1
+    | OrE ( OrIleft (pft1, (g1, p1)), pft2, pft3, (g, p)) -> graft pft2 [pft1]
+    | OrE ( OrIright(pft1, (g1, p1)), pft2, pft3, (g, p)) -> graft pft3 [pft1]
 
     | _ -> pft
 
