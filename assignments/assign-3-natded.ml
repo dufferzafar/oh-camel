@@ -466,26 +466,77 @@ let rec pare pft =
     )
 
     | ImpE (pft1, pft2, (g, p)) ->
-        ImpE (pft1, pft2, (g, p))
+    (
+        let pared1 = pare pft1 in
+        let (g1, p1) = root pared1 in
+
+        let pared2 = pare pft2 in
+        let (g2, p2) = root pared2 in
+
+        ImpE (pad pared1 g2, pad pared2 g1, (union g1 g2, p))
+    )
 
     | AndI (pft1, pft2, (g, p)) ->
-        AndI (pft1, pft2, (g, p))
+    (
+        let pared1 = pare pft1 in
+        let (g1, p1) = root pared1 in
+
+        let pared2 = pare pft2 in
+        let (g2, p2) = root pared2 in
+
+        AndI (pad pared1 g2, pad pared2 g1, (union g1 g2, p))
+    )
+
     | AndEleft (pft1, (g, p)) ->
-        AndEleft (pft1, (g, p))
+    (
+        let pared1 = pare pft1 in
+        let (g1, p1) = root pared1 in
+
+        AndEleft (pared1, (g1, p))
+    )
+
     | AndEright (pft1, (g, p)) ->
-        AndEright (pft1, (g, p))
+    (
+        let pared1 = pare pft1 in
+        let (g1, p1) = root pared1 in
+
+        AndEright (pared1, (g1, p))
+    )
 
     | OrIleft (pft1, (g, p)) ->
-        OrIleft (pft1, (g, p))
+    (
+        let pared1 = pare pft1 in
+        let (g1, p1) = root pared1 in
+
+        OrIleft (pared1, (g1, p))
+    )
+
     | OrIright (pft1, (g, p)) ->
-        OrIright (pft1, (g, p))
+    (
+        let pared1 = pare pft1 in
+        let (g1, p1) = root pared1 in
+
+        OrIright (pared1, (g1, p))
+    )
+
     | OrE (pft1, pft2, pft3, (g, p)) ->
         OrE (pft1, pft2, pft3, (g, p))
 
     | NotClass (pft1, (g, p)) ->
-        NotClass (pft1, (g, p))
+    (
+        let pared = pare pft1 in
+        let (g1, p1) = root pared in
+
+        (* Note: Not / p -> F ? *)
+        NotClass (pad pared [Not(p)], (remove (Not(p)) g1, p))
+    )
     | NotIntu (pft1, (g, p)) ->
-        NotIntu (pft1, (g, p))
+    (
+        let pared = pare pft1 in
+        let (g1, p1) = root pared in
+
+        NotIntu (pared, (g1, p))
+    )
 ;;
 
 
