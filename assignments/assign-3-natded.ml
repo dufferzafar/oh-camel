@@ -634,6 +634,28 @@ print_string "12 - Not Classical:\t\t";;           print_bool (wfprooftree pft_N
 print_string "13 - Not Intutionistic:\t\t";;       print_bool (wfprooftree pft_NotIntu);;
 print "\n----\n";;
 
-print "Pad";;
+print "Is Pad's output correct?";;
 print "";;
-print_string "Padded tree is correct?\t\t";;       print_bool (pft_pad = pad pft_Ass [P("d")]);;
+print_string "Assumption\t\t\t";;                  print_bool (pft_pad = pad pft_Ass [P("d")]);;
+print "\n----\n";;
+
+print "Does Pare maintain Well Formedness?";;
+print "";;
+print_string "1 - Assumption:\t\t\t";;             print_bool (wfprooftree pft_Ass = wfprooftree (pare pft_Ass));;
+print_string "2 - True Introduction:\t\t";;        print_bool (wfprooftree pft_TI = wfprooftree (pare pft_TI));;
+print_string "3 - False Elimination:\t\t";;        print_bool (wfprooftree pft_FE = wfprooftree (pare pft_FE));;
+print "";;
+print_string "4 - Implies Introduction:\t";;       print_bool (wfprooftree pft_ImpI = wfprooftree (pare pft_ImpI));;
+print_string "5 - Implies Elimination:\t";;        print_bool (wfprooftree pft_ImpE = wfprooftree (pare pft_ImpE));;
+print "";;
+print_string "6 - And Introduction:\t\t";;         print_bool (wfprooftree pft_AndI = wfprooftree (pare pft_AndI));;
+print_string "7 - And Elimination (left):\t";;     print_bool (wfprooftree pft_AndEleft = wfprooftree (pare pft_AndEleft));;
+print_string "8 - And Elimination (right):\t";;    print_bool (wfprooftree pft_AndEright = wfprooftree (pare pft_AndEright));;
+print "";;
+print_string "9  - Or Introduction (left):\t";;    print_bool (wfprooftree pft_OrIleft = wfprooftree (pare pft_OrIleft));;
+print_string "10 - Or Introduction (right):\t";;   print_bool (wfprooftree pft_OrIright = wfprooftree (pare pft_OrIright));;
+print_string "11 - Or Elimination:\t\t";;          print_bool (wfprooftree pft_OrE = wfprooftree (pare pft_OrE));;
+print "";;
+print_string "12 - Not Classical:\t\t";;           print_bool (wfprooftree pft_NotClass = wfprooftree (pare pft_NotClass));;
+print_string "13 - Not Intutionistic:\t\t";;       print_bool (wfprooftree pft_NotIntu = wfprooftree (pare pft_NotIntu));;
+print "\n----\n";;
