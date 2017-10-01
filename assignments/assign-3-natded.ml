@@ -569,6 +569,34 @@ let rec pare pft =
 ;;
 
 (*
+    find_pft : prooftree list -> prop -> prooftree
+
+    returns a proof tree from the list that can prove the conclusion
+*)
+let find_pft conclusion pft_list =
+    List.find
+        (fun pft -> let (_, r) = root pft in r = conclusion)
+        pft_list
+
+
+(*
+    graft : prooftree -> prooftree list -> prooftree
+
+    returns a proof tree in which all assumptions have been
+    replaced with their proof trees
+*)
+
+let rec graft pft pft_list =
+    match pft with
+
+    (* Instead of this assumption return a tree that proves it. *)
+    (* TODO - What if p is not present in the list? *)
+    | Ass (g, p) -> find_pft p pft_list
+
+    | _ -> pft
+
+
+(*
     normalise : prooftree -> prooftree = <fun>
 
     removes all occurrences of r-pairs in a given proof tree
