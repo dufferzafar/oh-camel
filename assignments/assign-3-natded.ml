@@ -520,7 +520,35 @@ let rec pare pft =
     )
 
     | OrE (pft1, pft2, pft3, (g, p)) ->
-        OrE (pft1, pft2, pft3, (g, p))
+    (
+        let pared1 = pare pft1 in
+        let (g1, p1) = root pared1 in
+
+        let pared2 = pare pft2 in
+        let (g2, p2) = root pared2 in
+
+        let pared3 = pare pft3 in
+        let (g3, p3) = root pared3 in
+
+
+        match p1 with
+
+        | Or (q1, q2) ->
+        (
+            let pared_g2 = difference g2 [q1] in
+            let pared_g3 = difference g3 [q2] in
+
+            OrE (
+                pad pared1 (union pared_g2 pared_g3),
+                pad pared2 (union g1 (q1::pared_g3)),
+                pad pared3 (union g1 (q2::pared_g2)),
+
+                (union g1 (union pared_g2 pared_g3) , p)
+            )
+        )
+
+        | _ -> raise NotWellFormed
+    )
 
     | NotClass (pft1, (g, p)) ->
     (
@@ -530,6 +558,7 @@ let rec pare pft =
         (* Note: Not / p -> F ? *)
         NotClass (pad pared [Not(p)], (remove (Not(p)) g1, p))
     )
+
     | NotIntu (pft1, (g, p)) ->
     (
         let pared = pare pft1 in
