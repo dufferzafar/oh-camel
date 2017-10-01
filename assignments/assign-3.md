@@ -9,16 +9,14 @@
 
 ---
 
-<!-- 1. Note the syntactical correction in the prooftree type. -->
+1. Note the syntactical correction in the prooftree type.
 
-<!-- 2. Strictly follow the prooftree type provided after correction (given below the instructions). -->
+2. Strictly follow the prooftree type provided after correction (given below the instructions).
 
-<!-- 3. Only accepted type of "prop set" is "prop list" based on the type prop provided in Assignment2. Do not assume any other type. 
+3. Only accepted type of "prop set" is "prop list" based on the type prop provided in Assignment2. Do not assume any other type. 
     `type sequent = prop list * prop`
--->
 
 4. Comply to the following types for your function
-<!--     
     3.1 ht : prooftree -> int = <fun>
     
     Define the function ht, which returns the height of a prooftree.
@@ -26,7 +24,6 @@
     3.2 size : prooftree -> int = <fun>
     
     Define the function size, which returns the number of nodes (rules used) in a prooftree
--->
     3.3 wfprooftree : prooftree -> bool = <fun>
     
     Define the function wfprooftree that check tat a given candidate proof tree is indeed a well-formed proof tree: 
@@ -41,6 +38,7 @@
     3.5 pare : prooftree -> prooftree = <fun>
     
     Write a function pare that given a well-formed proof tree, returns a well-formed proof tree with minimal assumptions in each sequent. (F2)
+
 
     3.6 graft : prooftree -> prooftree list -> prooftree = <fun>
     
@@ -68,4 +66,3 @@ type prooftree  = Ass of sequent | TI of sequent | FE of sequent
 
 ```
 ---
-
