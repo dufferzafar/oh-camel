@@ -861,4 +861,62 @@ let pft_list = [pft_graft_1; pft_graft_2];;
 print "Is graft's output correct?";;
 print_string "1 - Assumption:\t\t\t";;             print_bool (graft pft_graft_Ass pft_list = pft_graft_1);;
 print_string "2 - And Introduction:\t\t";;         print_bool (graft pft_graft_AndEleft pft_list = pft_graft_AndEleft_ans);;
+print "\n----\n";;
+
+(* ################################################################################################### *)
+(* Test Cases given by the TA *)
+
+let gamma = [P "p2";P "p1";P "p3"];;
+let gamma2 = [And (P "p",P "q");Or (P "p2",P "q2")];;
+
+let test_tree1 = Ass (gamma ,P "p1") ;;
+let test_tree2 = Ass (gamma ,P "p2") ;;
+let test_tree3 = AndI (test_tree1,test_tree2,(gamma,(And (P "p1",P
+"p2"))));;
+
+let test_tree4 = AndEleft (test_tree3,(gamma,P "p2"));;
+
+let test_fE    = FE (F::gamma,P "p1");;
+
+let gamma2 = [And (P "p",P "q");Or (P "p2",P "q2")];;
+let test_tree5 = Ass (gamma2,And (P "p",P "q")) ;;
+let test_tree6 = ImpI (test_tree5,([Or (P "p2",P "q2")],Implies (And (P "p",P "q"),And (P "p",P "q"))));;
+
+let gamma3 = [P "a"; P "b"];;
+let tq1 = Ass (gamma3,P "a");;
+let tq2 = Ass (gamma3,P "b");;
+let q1 = AndI (tq1, tq2, (gamma3,(And (P "a",P "b"))));;
+let q2 = OrIleft (tq2, (gamma3,(Or(P "b",P "c"))));;
+
+let delta1 = [And (P "a",P "b")];;
+let tp1 = Ass (delta1,(And (P "a",P "b")));;
+let p = AndEleft (tp1,(delta1, (P "a")));;
+
+let gamma3 = [P "a"; P "b"];;
+let tq1 = Ass (gamma3,P "a");;
+let tq2 = Ass (gamma3,P "b");;
+let q1 = AndI (tq1, tq2, (gamma3,(And (P "a",P "b"))));;
+let tree_nor = AndEleft (q1,(gamma,P "a"));;
+
+let pad_test_tree4 = AndEleft(AndI (Ass ([P "p2"; P "p1"; P "p3"; P "p4"], P "p1"),
+                               Ass ([P "p2"; P "p1"; P "p3"; P "p4"], P "p2"),
+                               ([P "p2"; P "p1"; P "p3"; P "p4"], And (P "p1", P "p2"))),
+                             ([P "p2"; P "p1"; P "p3"; P "p4"], P "p2"));;
+
+let pare_test_tree6 = ImpI (Ass ([And (P "p", P "q")], And (P "p", P "q")),
+                            ([], Implies (And (P "p", P "q"), And (P "p", P "q"))));;
+
+let graft_p_q1_q2 = AndEleft (AndI (Ass ([P "a"; P "b"], P "a"),Ass ([P "a"; P "b"], P "b"),
+                                    ([P "a"; P "b"], And (P "a", P "b"))),([P "a"; P "b"], P "a"));;
+
+let normalise_tree_nor = Ass ([P "a"; P "b"], P "a");;
+
+print "Test cases match TA's";;
 print "";;
+print_string "wfprooftree test_tree4\t\t";;        print_bool (wfprooftree test_tree4 = false);;
+print_string "wfprooftree test_fE\t\t";;           print_bool (wfprooftree test_fE = true);;
+print_string "pad test_tree4\t\t\t";;              print_bool (pad test_tree4 [P "p3";P "p4"] = pad_test_tree4);;
+print_string "pare test_tree6\t\t\t";;             print_bool (pare test_tree6 = pare_test_tree6);;
+print_string "graft p [q1;q2]\t\t\t";;             print_bool (graft p [q1;q2] = graft p [q1;q2]);;
+print_string "normalise tree_nor\t\t";;            print_bool (normalise tree_nor = normalise_tree_nor);;
+print "\n----\n";;
