@@ -539,6 +539,26 @@ let rec pare pft =
     )
 ;;
 
+(*
+    normalise : prooftree -> prooftree = <fun>
+
+    removes all occurrences of r-pairs in a given proof tree
+    (i.e., where an introduction rule is followed only by an
+    elimination rule of the main connective)
+*)
+
+let rec normalise pft =
+    match pft with
+
+    | AndEleft(  AndI(pft1, pft2, (g1, p1)), (g, p) ) -> pft1
+    | AndEright( AndI(pft1, pft2, (g1, p1)), (g, p) ) -> pft2
+
+    | ImpE( ImpI(pft1, (g1, p1)), pft2, (g, p) ) -> pft1
+
+    | OrE ( OrIleft (pft1, (g1, p1)), pft2, pft3, (g, p)) -> pft1
+    | OrE ( OrIright(pft1, (g1, p1)), pft2, pft3, (g, p)) -> pft1
+
+    | _ -> pft
 
 (*
     =====================================================
