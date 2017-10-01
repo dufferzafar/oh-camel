@@ -32,7 +32,6 @@ type prop =
 
 let member x s = List.mem x s;;
 let rec remove x s = List.filter (fun a -> a <> x) s;;
-
 let rec subset s1 s2 =
     match s1 with
         [] -> true
@@ -47,6 +46,15 @@ let rec union s1 s2 =
             union t s2
         else
             h :: (union t s2)
+;;
+let rec difference s1 s2 =
+    match s1 with
+        [] -> []
+    | h::t ->
+        if not (member h s2) then
+            h :: (difference t s2)
+        else
+            difference t s2
 ;;
 
 (*
@@ -449,12 +457,11 @@ let rec pare pft =
 
     | ImpI (pft1, (g, p)) ->
     (
-        let pared = pare pft1 in
-        let (g1, p1) = root pared in
+        let pared1 = pare pft1 in
+        let (g1, p1) = root pared1 in
 
         match p with
-        | Implies (q1, q2) -> ImpI (pared, (remove q1 g1, p))
-
+        | Implies (q1, q2) -> ImpI (pad pared1 [q1], (difference g1 [q1], p))
         | _                -> raise NotWellFormed
     )
 
