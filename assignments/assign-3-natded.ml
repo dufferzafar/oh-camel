@@ -773,11 +773,6 @@ let pft_NotClass = NotClass(
     ([Not(P("a")); F], P("a"))
 );;
 
-let pft_pad = Ass(
-    [P("a"); P("b"); P("c"); P("d")],
-    P("b")
-);;
-
 print "Is Well Formed?";;
 print "";;
 print_string "1 - Assumption:\t\t\t";;             print_bool (wfprooftree pft_Ass);;
@@ -799,10 +794,19 @@ print_string "12 - Not Classical:\t\t";;           print_bool (wfprooftree pft_N
 print_string "13 - Not Intutionistic:\t\t";;       print_bool (wfprooftree pft_NotIntu);;
 print "\n----\n";;
 
+(* ################################################################################################### *)
+
+let pft_pad = Ass(
+    [P("a"); P("b"); P("c"); P("d")],
+    P("b")
+);;
+
 print "Is Pad's output correct?";;
 print "";;
 print_string "Assumption\t\t\t";;                  print_bool (pft_pad = pad pft_Ass [P("d")]);;
 print "\n----\n";;
+
+(* ################################################################################################### *)
 
 print "Does Pare maintain Well Formedness?";;
 print "";;
@@ -824,3 +828,37 @@ print "";;
 print_string "12 - Not Classical:\t\t";;           print_bool (wfprooftree pft_NotClass = wfprooftree (pare pft_NotClass));;
 print_string "13 - Not Intutionistic:\t\t";;       print_bool (wfprooftree pft_NotIntu = wfprooftree (pare pft_NotIntu));;
 print "\n----\n";;
+
+(* ################################################################################################### *)
+
+let g_1 = [P "a"; P "b"];;
+let a_and_b = And (P "a", P "b");;
+
+let pft_graft_1 = AndI (
+    Ass (g_1, P "a"),
+    Ass (g_1, P "b"),
+    (g_1, a_and_b)
+);;
+
+let pft_graft_2 = OrIleft (
+    Ass (g_1, P "b"),
+    (g_1, Or (P "b", P "c"))
+) ;;
+
+let pft_graft_Ass = Ass ([a_and_b], a_and_b);;
+
+let pft_graft_AndEleft = AndEleft (
+    pft_graft_Ass,
+    ([a_and_b], P "a")
+);;
+
+let pft_graft_AndEleft_ans = AndEleft (
+    pft_graft_1,
+    (g_1, P "a")
+)
+let pft_list = [pft_graft_1; pft_graft_2];;
+
+print "Is graft's output correct?";;
+print_string "1 - Assumption:\t\t\t";;             print_bool (graft pft_graft_Ass pft_list = pft_graft_1);;
+print_string "2 - And Introduction:\t\t";;         print_bool (graft pft_graft_AndEleft pft_list = pft_graft_AndEleft_ans);;
+print "";;
