@@ -593,8 +593,96 @@ let rec graft pft pft_list =
     (* TODO - What if p is not present in the list? *)
     | Ass (g, p) -> find_pft p pft_list
 
-    | _ -> pft
+    | TI (g, p) -> let (g1, _) = root (List.hd pft_list) in TI (g1, p)
+    | FE (g, p) -> let (g1, _) = root (List.hd pft_list) in FE (g1, p)
 
+    | AndI (pft1, pft2, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        let grafted2 = graft pft2 pft_list in
+
+        AndI (grafted1, grafted2, (g1, p))
+    )
+
+    | AndEleft (pft1, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        AndEleft (grafted1, (g1, p))
+    )
+
+    | AndEright (pft1, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        AndEright (grafted1, (g1, p))
+    )
+
+    | ImpI (pft1, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        ImpI (grafted1, (g1, p))
+    )
+
+    | ImpE (pft1, pft2, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        let grafted2 = graft pft2 pft_list in
+
+        ImpE (grafted1, grafted2, (g1, p))
+    )
+
+    | OrIleft (pft1, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        OrIleft (grafted1, (g1, p))
+    )
+
+    | OrIright (pft1, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        OrIright (grafted1, (g1, p))
+    )
+
+    | OrE (pft1, pft2, pft3, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        let grafted2 = graft pft2 pft_list in
+        let grafted3 = graft pft2 pft_list in
+
+        OrE (grafted1, grafted2, grafted3, (g1, p))
+    )
+
+    | NotClass (pft1, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        NotClass (grafted1, (g1, p))
+    )
+
+
+    | NotIntu (pft1, (g, p)) ->
+    (
+        let grafted1 = graft pft1 pft_list in
+        let (g1, p1) = root grafted1 in
+
+        NotIntu (grafted1, (g1, p))
+    )
 
 (*
     normalise : prooftree -> prooftree = <fun>
