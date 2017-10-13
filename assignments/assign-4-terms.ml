@@ -263,6 +263,30 @@ let mgu t1 t2 =
 ;;
 
 (*
+    compose : substitution -> substitution -> substitution
+
+    Return a composition of two substitutions
+*)
+let rec compose s1 s2 =
+
+    let rec compose_with_acc s1 s2 acc =
+    (
+        match (s1, s2) with
+
+        | ([], []) -> acc
+        | (l, []) | ([], l) -> union acc l
+        | (((v1, t1) :: rest1), ((v2, t2) :: rest2)) ->
+
+            if (occurs v2 t1) then
+                union acc [(v1, subst t1 [(v2, t2)]); (v2, t2)]
+            else
+                compose_with_acc rest1 rest2 (union [(v1, t1); (v2, t2)] acc)
+    )
+    in
+    compose_with_acc s1 s2 []
+;;
+
+(*
     =====================================================
     =====================================================
 *)
@@ -341,4 +365,17 @@ let sub2 = [("Y", V "Z")];;
 
 (*
 subst term1 sub1;
+*)
+
+(*
+mgu term4 term5;;
+mgu term4 term6;;
+*)
+
+(*
+compose sub1 sub2;;
+*)
+
+(*
+subst term3 (compose sub1 sub2);;
 *)
