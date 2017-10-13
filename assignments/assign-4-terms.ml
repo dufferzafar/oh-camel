@@ -12,6 +12,11 @@ let print_bool b =
 
 let print_int i = print (string_of_int i);;
 
+(*
+    Typical list folding operations
+*)
+let list_max l = List.fold_left (fun acc x -> max acc x) 0 l;;
+let list_sum l = List.fold_left (fun acc x -> acc + x) 0 l;;
 
 (*
     =====================================================
@@ -42,7 +47,7 @@ type signature = (symbol * arity) list;;
 (* Count the number of times an element occurs in a list *)
 let count e l =
     let count_list = List.map (fun x -> if x = e then 1 else 0) l
-    in List.fold_left (fun acc x -> acc + x) 0 count_list
+    in list_sum count_list
 ;;
 
 (* Find all symbols occurring in a signature *)
@@ -104,13 +109,10 @@ let rec wfterm trm sign =
         && List.fold_left (fun acc t -> acc && (wfterm t sign)) true trm_list
 ;;
 
-(* Find maximum from a list *)
-let list_max l = List.fold_left (fun acc x -> max acc x) 0 l;;
-
 (*
     ht : term -> int
 
-    return height of a term tree (counting from 0)
+    returns height of a term tree (counting from 0)
 *)
 let rec ht trm =
     match trm with
@@ -118,6 +120,19 @@ let rec ht trm =
     | V _ -> 0
 
     | Node (sym, trm_list) -> 1 + list_max (List.map (fun t -> ht t) trm_list)
+;;
+
+(*
+    size : term -> int
+
+    returns size of a term (number of nodes in)
+*)
+let rec size trm =
+    match trm with
+
+    | V _ -> 1
+
+    | Node (sym, trm_list) -> 1 + list_sum (List.map (fun t -> size t) trm_list)
 ;;
 
 
@@ -173,4 +188,14 @@ print_string "term 3:\t\t\t";;           print_int (ht term3);;
 print_string "term 4:\t\t\t";;           print_int (ht term4);;
 print_string "term 5:\t\t\t";;           print_int (ht term5);;
 print_string "term 6:\t\t\t";;           print_int (ht term6);;
+print "\n----\n";;
+
+print "size";;
+print "";;
+print_string "term 1:\t\t\t";;           print_int (size term1);;
+print_string "term 2:\t\t\t";;           print_int (size term2);;
+print_string "term 3:\t\t\t";;           print_int (size term3);;
+print_string "term 4:\t\t\t";;           print_int (size term4);;
+print_string "term 5:\t\t\t";;           print_int (size term5);;
+print_string "term 6:\t\t\t";;           print_int (size term6);;
 print "\n----\n";;
