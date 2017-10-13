@@ -201,12 +201,6 @@ let rec subst trm sub =
         Node (sym, List.map (fun t -> subst t sub) trm_list)
 ;;
 
-(*
-    mgu : term -> term -> substitution
-
-    returns the most general unifier of two terms (if it exists)
-    otherwise raises an exception NOT_UNIFIABLE
-*)
 exception NOT_UNIFIABLE;;
 
 (*
@@ -218,26 +212,24 @@ let rec occurs x t =
       | V v -> v = x
       | Node (_, trm_lst) -> List.exists (occurs x) trm_lst
 
+(*
+    mgu : term -> term -> substitution
+
+    returns the most general unifier of two terms (if it exists)
+    otherwise raises an exception NOT_UNIFIABLE
+*)
 let mgu t1 t2 =
+    let rec mgu_of_terms p1 p2 =
 
-    let rec mgu_of_children pairs =
-        match pairs with
-        | [] -> []
-        | (c1, c2) :: rest ->
-            let t2 = mgu_of_children rest in
-            let t1 = mgu_aux (c1, c2) in
-            union t1 t2
-
-    and mgu_aux (p1, p2) =
         match (p1, p2) with
 
         (* Two different variables *)
         | (V v, V w) ->
         (
-            if v = w then
-                []
-            else
+            if v <> w then
                 [(v, V w)]
+            else
+                []
         )
 
         (* A variable and a node *)
@@ -260,7 +252,14 @@ let mgu t1 t2 =
                 raise NOT_UNIFIABLE
         )
 
-    in mgu_aux (t1, t2)
+    and mgu_of_children pairs =
+    (
+        match pairs with
+        | [] -> []
+        | (c1, c2) :: rest -> union (mgu_of_terms c1 c2) (mgu_of_children rest)
+    )
+
+    in mgu_of_terms t1 t2
 ;;
 
 (*
