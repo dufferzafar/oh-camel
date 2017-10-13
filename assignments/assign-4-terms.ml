@@ -286,6 +286,17 @@ let rec compose s1 s2 =
     compose_with_acc s1 s2 []
 ;;
 
+(* Represents a list of substituions that are applied from left to right *)
+type composition = substitution list;;
+
+(*
+    resolve_composition : composition -> substitution
+*)
+let resolve_composition comp =
+    List.fold_left (fun acc x -> compose acc x) (List.hd comp) comp
+;;
+
+
 (*
     =====================================================
     =====================================================
@@ -378,4 +389,9 @@ compose sub1 sub2;;
 
 (*
 subst term3 (compose sub1 sub2);;
+*)
+
+(*
+let sub = resolve_composition [sub1; sub2];;
+subst term3 sub;;
 *)
