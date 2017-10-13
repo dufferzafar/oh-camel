@@ -202,6 +202,68 @@ let rec subst trm sub =
 ;;
 
 (*
+    mgu : term -> term -> substitution
+
+    returns the most general unifier of two terms (if it exists)
+    otherwise raises an exception NOT_UNIFIABLE
+*)
+exception NOT_UNIFIABLE;;
+
+(*
+    occurs : variable -> term -> bool
+    Check whether a variable occurs in a term.
+*)
+let rec occurs x t =
+    match t with
+      | V v -> v = x
+      | Node (_, trm_lst) -> List.exists (occurs x) trm_lst
+
+let mgu t1 t2 =
+
+    let rec mgu_of_children pairs =
+        match pairs with
+        | [] -> []
+        | (c1, c2) :: rest ->
+            let t2 = mgu_of_children rest in
+            let t1 = mgu_aux (c1, c2) in
+            union t1 t2
+
+    and mgu_aux (p1, p2) =
+        match (p1, p2) with
+
+        (* Two different variables *)
+        | (V v, V w) ->
+        (
+            if v = w then
+                []
+            else
+                [(v, V w)]
+        )
+
+        (* A variable and a node *)
+        | (V v, (Node _ as t)) | ( Node _ as t, V v) ->
+        (
+            if not (occurs v t) then
+                [(v, t)]
+            else
+                raise NOT_UNIFIABLE
+        )
+
+        (* Two different nodes *)
+        | (Node (f, trm_list_1), Node (g, trm_list_2)) ->
+        (
+            if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
+            then
+                let paired_lists = List.combine trm_list_1 trm_list_2
+                in mgu_of_children paired_lists
+            else
+                raise NOT_UNIFIABLE
+        )
+
+    in mgu_aux (t1, t2)
+;;
+
+(*
     =====================================================
     =====================================================
 *)
