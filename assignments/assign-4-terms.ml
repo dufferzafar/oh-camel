@@ -113,7 +113,7 @@ let check_sig sign =
 
 
 (*
-    wfterm : term * signature -> bool
+    wfterm : term -> signature -> bool
 
     checks that a given term is well-formed according to the signature
 *)
@@ -161,7 +161,7 @@ let rec size trm =
 (*
     vars : term -> string list
 
-    return the variables occurring
+    return the variables occurring in the term
 *)
 let rec vars trm =
     match trm with
@@ -171,6 +171,35 @@ let rec vars trm =
     | Node (_, trm_list) -> List.fold_left (fun acc t -> union acc (vars t)) [] trm_list
 ;;
 
+(*
+    Define type for substitution
+
+    A substitution is used to replaces a variable by a term.
+*)
+type substitution = (variable * term) list;;
+
+(*
+    subst : term -> substitution -> term
+
+    Apply a substitution on a term
+*)
+let rec subst trm sub =
+    match trm with
+
+    | V v  ->
+    (
+        try
+            (* Replace this term with its substitution *)
+            let _, t = List.find (fun (x, t) -> v = x ) sub in t
+        with
+            (* If not found just return the variable un-modified *)
+            Not_found -> V v
+    )
+
+    | Node (sym, trm_list) ->
+
+        Node (sym, List.map (fun t -> subst t sub) trm_list)
+;;
 
 (*
     =====================================================
@@ -245,3 +274,10 @@ print_string "term 4:\t\t\t";;           print_set print_string (vars term4);; p
 print_string "term 5:\t\t\t";;           print_set print_string (vars term5);; print "";;
 print_string "term 6:\t\t\t";;           print_set print_string (vars term6);; print "";;
 print "\n----\n";;
+
+let sub1 = [("X", Node("*", [V "Y"; V "Y"]))];;
+let sub2 = [("Y", V "Z")];;
+
+(*
+subst term1 sub1;
+*)
