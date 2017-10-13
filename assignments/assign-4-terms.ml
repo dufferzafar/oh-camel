@@ -12,6 +12,29 @@ let print_bool b =
 
 let print_int i = print (string_of_int i);;
 
+let rec print_set print_elem s =
+    match s with
+        [] -> ()
+    | h::t ->
+        print_elem h;
+        print_string "; ";
+        print_set print_elem t
+;;
+
+(*
+    Set related functions
+*)
+let member x s = List.mem x s;;
+let rec union s1 s2 =
+    match s1 with
+        [] -> s2
+    | h::t ->
+        if member h s2 then
+            union t s2
+        else
+            h :: (union t s2)
+;;
+
 (*
     Typical list folding operations
 *)
@@ -117,7 +140,7 @@ let rec wfterm trm sign =
 let rec ht trm =
     match trm with
 
-    | V _ -> 0
+    | V _                  -> 0
 
     | Node (sym, trm_list) -> 1 + list_max (List.map (fun t -> ht t) trm_list)
 ;;
@@ -130,9 +153,22 @@ let rec ht trm =
 let rec size trm =
     match trm with
 
-    | V _ -> 1
+    | V _                  -> 1
 
     | Node (sym, trm_list) -> 1 + list_sum (List.map (fun t -> size t) trm_list)
+;;
+
+(*
+    vars : term -> string list
+
+    return the variables occurring
+*)
+let rec vars trm =
+    match trm with
+
+    | V v                -> [v]
+
+    | Node (_, trm_list) -> List.fold_left (fun acc t -> union acc (vars t)) [] trm_list
 ;;
 
 
@@ -198,4 +234,14 @@ print_string "term 3:\t\t\t";;           print_int (size term3);;
 print_string "term 4:\t\t\t";;           print_int (size term4);;
 print_string "term 5:\t\t\t";;           print_int (size term5);;
 print_string "term 6:\t\t\t";;           print_int (size term6);;
+print "\n----\n";;
+
+print "vars";;
+print "";;
+print_string "term 1:\t\t\t";;           print_set print_string (vars term1);; print "";;
+print_string "term 2:\t\t\t";;           print_set print_string (vars term2);; print "";;
+print_string "term 3:\t\t\t";;           print_set print_string (vars term3);; print "";;
+print_string "term 4:\t\t\t";;           print_set print_string (vars term4);; print "";;
+print_string "term 5:\t\t\t";;           print_set print_string (vars term5);; print "";;
+print_string "term 6:\t\t\t";;           print_set print_string (vars term6);; print "";;
 print "\n----\n";;
