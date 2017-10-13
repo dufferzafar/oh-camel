@@ -102,6 +102,24 @@ let rec wfterm trm sign =
 
         (* Ensure all the child terms are well formed *)
         && List.fold_left (fun acc t -> acc && (wfterm t sign)) true trm_list
+;;
+
+(* Find maximum from a list *)
+let list_max l = List.fold_left (fun acc x -> max acc x) 0 l;;
+
+(*
+    ht : term -> int
+
+    return height of a term tree (counting from 0)
+*)
+let rec ht trm =
+    match trm with
+
+    | V _ -> 0
+
+    | Node (sym, trm_list) -> 1 + list_max (List.map (fun t -> ht t) trm_list)
+;;
+
 
 (*
     =====================================================
@@ -145,4 +163,14 @@ print_string "term 3:\t\t\t";;           print_bool (wfterm term3 sig1);;
 print_string "term 4:\t\t\t";;           print_bool (wfterm term4 sig1);;
 print_string "term 5:\t\t\t";;           print_bool (wfterm term5 sig1);;
 print_string "term 6:\t\t\t";;           print_bool (wfterm term6 sig1);;
+print "\n----\n";;
+
+print "ht";;
+print "";;
+print_string "term 1:\t\t\t";;           print_int (ht term1);;
+print_string "term 2:\t\t\t";;           print_int (ht term2);;
+print_string "term 3:\t\t\t";;           print_int (ht term3);;
+print_string "term 4:\t\t\t";;           print_int (ht term4);;
+print_string "term 5:\t\t\t";;           print_int (ht term5);;
+print_string "term 6:\t\t\t";;           print_int (ht term6);;
 print "\n----\n";;
