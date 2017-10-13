@@ -84,6 +84,24 @@ let check_sig sign =
 ;;
 
 
+(*
+    wfterm : term * signature -> bool
+
+    checks that a given term is well-formed according to the signature
+*)
+let rec wfterm trm sign =
+
+    match trm with
+
+    | V _ -> true
+
+    | Node (sym, trm_list) ->
+
+        (* Ensure this symbol has proper number of children (based on arity) *)
+        List.mem (sym, List.length trm_list) sign
+
+        (* Ensure all the child terms are well formed *)
+        && List.fold_left (fun acc t -> acc && (wfterm t sign)) true trm_list
 
 (*
     =====================================================
@@ -111,3 +129,20 @@ print_string "sig1:\t\t\t";;                print_bool (check_sig sig1);;
 print_string "sig2:\t\t\t";;                print_bool (check_sig sig2);;
 print "\n----\n";;
 
+let term1 = (Node ("f", [V "X"]));;
+let term2 = (Node ("g", [V "X"; Node ("h",[Node("f",[V "X"]); V "Y"])]));;
+let term3 = (Node ("g", [V "X"; Node ("*",[V "Y";Node ("*",[V "X"; V "Y"])])]));;
+
+let term4 = (Node ("g", [V "X"; Node ("*", [V "Y"; V "X"] )]));;
+let term5 = (Node ("g", [V "Z"; Node ("*", [V "X"; V "Z"] )]));;
+let term6 = (Node ("g", [V "Z"; Node ("g", [V "X"; V "Z"] )]));;
+
+print "wfterm";;
+print "";;
+print_string "term 1:\t\t\t";;           print_bool (wfterm term1 sig1);;
+print_string "term 2:\t\t\t";;           print_bool (wfterm term2 sig1);;
+print_string "term 3:\t\t\t";;           print_bool (wfterm term3 sig1);;
+print_string "term 4:\t\t\t";;           print_bool (wfterm term4 sig1);;
+print_string "term 5:\t\t\t";;           print_bool (wfterm term5 sig1);;
+print_string "term 6:\t\t\t";;           print_bool (wfterm term6 sig1);;
+print "\n----\n";;
