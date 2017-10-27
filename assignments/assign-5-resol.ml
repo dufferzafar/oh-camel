@@ -29,13 +29,17 @@ let rec solve (program, goals) =
     | g::rest ->
 
         (* Solve the first goal *)
-        solve_one (program, g, program)
+        solve_one (program, g)
 
         (* And solve the rest of the goals *)
         && solve (program, rest)
 
-and solve_one (cprog, g, program) =
-    match cprog with
+and solve_one (program, g) =
+
+    (* Define a new function so that original program value remains *)
+    let rec resolve (p, g) =
+
+    match p with
 
     (* Can't prove a goal from an empty program *)
     | [] -> false
@@ -52,14 +56,16 @@ and solve_one (cprog, g, program) =
             if g = h then
                 true
             else
-                solve_one (rest, g, program)
+                resolve (rest, g)
 
         | Rule (h, b) ->
             if g = h then
                 solve (program, b)
             else
-                solve_one (rest, g, program)
+                resolve (rest, g)
     )
+
+    in resolve (program, g)
 ;;
 
 (*
