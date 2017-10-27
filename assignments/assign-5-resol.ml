@@ -13,36 +13,40 @@ type program = clause list;;
 type goal = atom list;;
 
 (*
-    Others
+    Main Code!
 *)
-
-(* Solve using a stack for goals *)
-let rec solve_dfs program goals_stack  =
-
-    match program with
-
-    | [] ->
-        Stack.length goals_stack = 0
-
-    | cls::rest ->
-
-        match cls with
-
-        | Fact h -> true
-        | Rule (h, b) -> false;;
-
-        (* solve_dfs rest goals_stack;; *)
 
 (*
     solve : program -> goal -> bool
 *)
-let solve program goals =
+let rec solve (program, goals) =
+    match goals with
 
-    (* Use a standard stack and add all starting goals to subgoals *)
-    let goals_stack = Stack.create () in
-        List.iter (fun p -> Stack.push p goals_stack) goals;
+    | [] -> true
+    | g::rest -> solve_one (program, g, program) && solve (program, rest);
 
-    solve_dfs program goals_stack;;
+and solve_one (cprog, g, program) =
+    match cprog with
+
+    (* Can't prove a goal from an empty program *)
+    | [] -> false
+
+    | c::rest ->
+    (
+        match c with
+        | Fact h ->
+            if g = h then
+                true
+            else
+                solve_one (rest, g, program)
+
+        | Rule (h, b) ->
+            if g = h then
+                solve (program, b)
+            else
+                solve_one (rest, g, program)
+    )
+;;
 
 (*
     Get head of a clause
@@ -73,21 +77,21 @@ let r2 = Rule (P "q", [P "t";]);;
 
 let r3 = Rule (P "r", [P "z"]);;
 
-let p1 = [f1; f2; f3; r1; r2];;
+let p1 = [f1; f2; f3; r1];;
 
 let g1 = [P "s"; P "q"];;
 
 let g2 = [P "z"];;
 
 (* Should return true *)
-solve p1 g1;;
+solve (p1, g1);;
 
 (* Should return false *)
-solve p1 g2;;
+solve (p1, g2);;
 
 (* Should return true *)
-solve [] [];;
-solve p1 [];;
+solve ([], []);;
+solve (p1, []);;
 
 (* Should return false *)
-solve [] g1;;
+solve ([], g1);;
