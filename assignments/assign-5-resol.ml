@@ -13,17 +13,26 @@ type program = clause list;;
 type goal = atom list;;
 
 (*
-    Main Code!
+    =====================================================
+    =====================================================
 *)
 
 (*
+    Return whether a goal can be proven from a program?
+
     solve : program -> goal -> bool
 *)
 let rec solve (program, goals) =
     match goals with
 
     | [] -> true
-    | g::rest -> solve_one (program, g, program) && solve (program, rest);
+    | g::rest ->
+
+        (* Solve the first goal *)
+        solve_one (program, g, program)
+
+        (* And solve the rest of the goals *)
+        && solve (program, rest)
 
 and solve_one (cprog, g, program) =
     match cprog with
@@ -35,6 +44,11 @@ and solve_one (cprog, g, program) =
     (
         match c with
         | Fact h ->
+
+            (*
+                Matching a goal with the head of a Fact / Rule
+                is the resolution step
+            *)
             if g = h then
                 true
             else
@@ -84,14 +98,14 @@ let g1 = [P "s"; P "q"];;
 let g2 = [P "z"];;
 
 (* Should return true *)
-solve (p1, g1);;
+assert (solve ([], []));;
+assert (solve (p1, []));;
 
 (* Should return false *)
-solve (p1, g2);;
+assert (not (solve ([], g1)));;
 
 (* Should return true *)
-solve ([], []);;
-solve (p1, []);;
+assert (solve (p1, g1));;
 
 (* Should return false *)
-solve ([], g1);;
+assert (not (solve (p1, g2)));;
