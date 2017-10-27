@@ -10,7 +10,7 @@ type body = atom list;;
 type clause = Fact of head | Rule of head * body;;
 
 type program = clause list;;
-type goals = atom list;;
+type goal = atom list;;
 
 (* For debugging *)
 let s atom = match atom with P s -> s;;
@@ -21,12 +21,12 @@ let s atom = match atom with P s -> s;;
 *)
 
 (*
+    solve_mrec : program -> goal -> bool
+
     Return whether a goal can be proven from a program?
 
     This uses mutual recursion for backtracking
     (essentially using the Call-stack)
-
-    solve : program -> goal -> bool
 *)
 let rec solve_mrec program goals =
     match goals with
@@ -80,9 +80,9 @@ and solve_one_mrec program goal =
 ;;
 
 (*
-    Return bodies of all rules that match
-
     solve_one : program -> goal -> bool * goals
+
+    Return bodies of all rules that match
 *)
 let rec solve_one program goal new_goals =
 
@@ -108,11 +108,17 @@ let rec solve_one program goal new_goals =
 
 
 (*
+    solve : joiner -> program -> clause -> bool
+
     Solve while explicitly maintaining a stack of current goals
 
-    solve : program -> clause -> bool
+    joiner function decides where to append newly found sub goals
+
+        DFS : before the original goals (stack)
+        BFS : after the original goals (queue)
+
 *)
-let rec solve program goals =
+let rec solve joiner program goals =
     match goals with
 
     | [] -> true
@@ -124,17 +130,11 @@ let rec solve program goals =
 
         if ok then
 
-            (* Append newly found sub goals before the original goals to get DFS *)
-            let new_goals_list = List.map (fun x -> x @ rest) subgoals_list in
+            let new_goals_list = List.map (fun x -> joiner x rest) subgoals_list in
 
-            (*
-                The fold has an or because any of the new_goals should be true
-
-                This is where the backtracking happens
-            *)
-            List.fold_left (fun acc x -> acc || solve program x ) false new_goals_list
+            (* This is where the backtracking happens! *)
+            List.fold_left (fun acc x -> acc || solve joiner program x) false new_goals_list
         else
-            (* We were not able to solve one of the goals *)
             false
 
 (*
@@ -177,6 +177,14 @@ let run_test_cases solver =
     assert (solver p2 g3);
 ;;
 
+(* Mutual Recursion is also a DFS *)
 run_test_cases solve_mrec;;
-run_test_cases solve;;
+
+(* DFS: Append newly found sub goals before the original goals *)
+let solve_dfs = solve (fun naye purane -> naye @ purane) in
+run_test_cases solve_dfs;;
+
+(* BFS: Append newly found sub goals after the original goals *)
+let solve_bfs = solve (fun naye purane -> purane @ naye) in
+run_test_cases solve_bfs;;
 
