@@ -150,13 +150,19 @@ let r1 = Rule (P "q", [P "s"; P "t"]);;
 let r2 = Rule (P "q", [P "t";]);;
 let r3 = Rule (P "q", [P "z"]);;
 
+let r4 = Rule (P "s", [P "t"; P"u"]);;
+let r5 = Rule (P "t", [P "u"; P"s"]);;
+
 let p1 = [f1; f2; f3; r1];;
 let p2 = [r3; r2; f2];;
-let p3 = [r3; f4]
+let p3 = [r3; f4];;
+
+let p4 = [f2; f3; r4; r5];;
 
 let g1 = [P "s"; P "q"];;
 let g2 = [P "z"];;
 let g3 = [P "q"];;
+let g4 = [P "s"];;
 
 (* Run test cases on a solver *)
 let run_test_cases solver =
@@ -174,11 +180,14 @@ let run_test_cases solver =
     (* No way to prove z *)
     assert (not (solver p1 g2));
 
-    (* Order of rules shouldn't matter *)
+    (* Order of rules doesn't matter *)
     assert (solver p2 g3);
 
-    (* Order of clauses shouldn't matter *)
+    (* Order of clauses doesn't matter *)
     assert (solver p3 g3);
+
+    (* As I said, Order doesn't matter! *)
+    assert (solver p4 g4);
 ;;
 
 (* Mutual Recursion is also a DFS *)
