@@ -144,6 +144,7 @@ let rec solve joiner program goals =
 let f1 = Fact (P "s");;
 let f2 = Fact (P "t");;
 let f3 = Fact (P "u");;
+let f4 = Fact (P "q");;
 
 let r1 = Rule (P "q", [P "s"; P "t"]);;
 let r2 = Rule (P "q", [P "t";]);;
@@ -151,6 +152,7 @@ let r3 = Rule (P "q", [P "z"]);;
 
 let p1 = [f1; f2; f3; r1];;
 let p2 = [r3; r2; f2];;
+let p3 = [r3; f4]
 
 let g1 = [P "s"; P "q"];;
 let g2 = [P "z"];;
@@ -159,22 +161,24 @@ let g3 = [P "q"];;
 (* Run test cases on a solver *)
 let run_test_cases solver =
 
-    (* Should return true *)
+    (* Emoty goal can always be proved *)
     assert (solver [] []);
-
     assert (solver p1 []);
 
-    (* Should return false *)
+    (* Can't prove a goal from an empty program *)
     assert (not (solver [] g1));
 
-    (* Should return true *)
+    (* s & q can be proven *)
     assert (solver p1 g1);
 
-    (* Should return false *)
+    (* No way to prove z *)
     assert (not (solver p1 g2));
 
-    (* Order of rules does not matter! *)
+    (* Order of rules shouldn't matter *)
     assert (solver p2 g3);
+
+    (* Order of clauses shouldn't matter *)
+    assert (solver p3 g3);
 ;;
 
 (* Mutual Recursion is also a DFS *)
