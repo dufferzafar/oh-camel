@@ -10,7 +10,7 @@ type body = atom list;;
 type clause = Fact of head | Rule of head * body;;
 
 type program = clause list;;
-type goal = atom list;;
+type goals = atom list;;
 
 (* For debugging *)
 let s atom = match atom with P s -> s;;
@@ -80,20 +80,62 @@ and solve_one_mrec (program, goal) =
 ;;
 
 (*
-    Get head of a clause
+    Return bodies of all rules that match
 
-    get_head : clause -> head
+    solve_one : program -> goal -> bool * goals
 *)
-let get_head cls = match cls with Fact h | Rule (h, _) -> h
+let rec solve_one (program, goal, new_goals) =
+
+    match program with
+
+    | [] -> (new_goals <> [], new_goals)
+
+    | c::rest ->
+    (
+        match c with
+        | Fact h ->
+            if goal = h then
+                (true, [[]])
+            else
+                solve_one (rest, goal, new_goals)
+
+        | Rule (h, b) ->
+            if goal = h then
+                solve_one (rest, goal, b::new_goals)
+            else
+                solve_one (rest, goal, new_goals)
+    )
+
 
 (*
-    Find all clauses whose head matches the goal
+    Solve while explicitly maintaining a stack of current goals
 
-    find_matches : program -> goal -> bool
+    solve : program -> clause -> bool
 *)
-let find_matching program goal =
-    List.filter (fun cls -> get_head cls = goal) program
-;;
+let rec solve (program, goals) =
+    match goals with
+
+    | [] -> true
+
+    | g::rest ->
+
+        (* Try to solve the first goal and find new goals *)
+        let ok, subgoals_list = solve_one (program, g, []) in
+
+        if ok then
+
+            (* Append newly found sub goals before the original goals to get DFS *)
+            let new_goals_list = List.map (fun x -> x @ rest) subgoals_list in
+
+            (*
+                The fold has an or because any of the new_goals should be true
+
+                This is where the backtracking happens
+            *)
+            List.fold_left (fun acc x -> acc || solve (program, x) ) false new_goals_list
+        else
+            (* We were not able to solve one of the goals *)
+            false
 
 (*
     Test Cases
@@ -136,3 +178,4 @@ let run_test_cases solver =
 ;;
 
 run_test_cases solve_mrec;;
+run_test_cases solve;;
