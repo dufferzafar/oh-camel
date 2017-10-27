@@ -22,19 +22,19 @@ type goal = atom list;;
 
     solve : program -> goal -> bool
 *)
-let rec solve (program, goals) =
+let rec solve_mrec (program, goals) =
     match goals with
 
     | [] -> true
     | g::rest ->
 
         (* Solve the first goal *)
-        solve_one (program, g)
+        solve_one_mrec (program, g)
 
         (* And solve the rest of the goals *)
-        && solve (program, rest)
+        && solve_mrec (program, rest)
 
-and solve_one (program, g) =
+and solve_one_mrec (program, g) =
 
     (* Define a new function so that original program value remains *)
     let rec resolve (p, g) =
@@ -60,7 +60,7 @@ and solve_one (program, g) =
 
         | Rule (h, b) ->
             if g = h then
-                solve (program, b)
+                solve_mrec (program, b)
             else
                 resolve (rest, g)
     )
@@ -103,15 +103,22 @@ let g1 = [P "s"; P "q"];;
 
 let g2 = [P "z"];;
 
-(* Should return true *)
-assert (solve ([], []));;
-assert (solve (p1, []));;
+(* Run test cases on a solver *)
+let run_test_cases solver =
 
-(* Should return false *)
-assert (not (solve ([], g1)));;
+    (* Should return true *)
+    assert (solver ([], []));
 
-(* Should return true *)
-assert (solve (p1, g1));;
+    assert (solver (p1, []));
 
-(* Should return false *)
-assert (not (solve (p1, g2)));;
+    (* Should return false *)
+    assert (not (solver ([], g1)));
+
+    (* Should return true *)
+    assert (solver (p1, g1));
+
+    (* Should return false *)
+    assert (not (solver (p1, g2)));
+;;
+
+run_test_cases solve_mrec;;
