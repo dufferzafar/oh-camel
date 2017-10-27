@@ -28,22 +28,22 @@ let s atom = match atom with P s -> s;;
 
     solve : program -> goal -> bool
 *)
-let rec solve_mrec (program, goals) =
+let rec solve_mrec program goals =
     match goals with
 
     | [] -> true
     | g::rest ->
 
         (* Solve the first goal *)
-        solve_one_mrec (program, g)
+        solve_one_mrec program g
 
         (* And solve the rest of the goals *)
-        && solve_mrec (program, rest)
+        && solve_mrec program rest
 
-and solve_one_mrec (program, goal) =
+and solve_one_mrec program goal =
 
     (* Define a new function so that original program value remains *)
-    let rec resolve (p, g) =
+    let rec resolve p g =
 
     match p with
 
@@ -63,20 +63,20 @@ and solve_one_mrec (program, goal) =
                 (* let () = Printf.printf "%s matched with %s \n" (s g) (s h) in *)
                 true
             else
-                resolve (rest, g)
+                resolve rest g
 
         | Rule (h, b) ->
             if g = h then
                 (* See if the body of this rule can be solved *)
-                solve_mrec (program, b)
+                solve_mrec program b
 
                 (* Otherwise keep trying! *)
-                || resolve (rest, g)
+                || resolve rest g
             else
-                resolve (rest, g)
+                resolve rest g
     )
 
-    in resolve (program, goal)
+    in resolve program goal
 ;;
 
 (*
@@ -84,7 +84,7 @@ and solve_one_mrec (program, goal) =
 
     solve_one : program -> goal -> bool * goals
 *)
-let rec solve_one (program, goal, new_goals) =
+let rec solve_one program goal new_goals =
 
     match program with
 
@@ -97,13 +97,13 @@ let rec solve_one (program, goal, new_goals) =
             if goal = h then
                 (true, [[]])
             else
-                solve_one (rest, goal, new_goals)
+                solve_one rest goal new_goals
 
         | Rule (h, b) ->
             if goal = h then
-                solve_one (rest, goal, b::new_goals)
+                solve_one rest goal (b::new_goals)
             else
-                solve_one (rest, goal, new_goals)
+                solve_one rest goal new_goals
     )
 
 
@@ -112,7 +112,7 @@ let rec solve_one (program, goal, new_goals) =
 
     solve : program -> clause -> bool
 *)
-let rec solve (program, goals) =
+let rec solve program goals =
     match goals with
 
     | [] -> true
@@ -120,7 +120,7 @@ let rec solve (program, goals) =
     | g::rest ->
 
         (* Try to solve the first goal and find new goals *)
-        let ok, subgoals_list = solve_one (program, g, []) in
+        let ok, subgoals_list = solve_one program g [] in
 
         if ok then
 
@@ -132,7 +132,7 @@ let rec solve (program, goals) =
 
                 This is where the backtracking happens
             *)
-            List.fold_left (fun acc x -> acc || solve (program, x) ) false new_goals_list
+            List.fold_left (fun acc x -> acc || solve program x ) false new_goals_list
         else
             (* We were not able to solve one of the goals *)
             false
@@ -160,22 +160,23 @@ let g3 = [P "q"];;
 let run_test_cases solver =
 
     (* Should return true *)
-    assert (solver ([], []));
+    assert (solver [] []);
 
-    assert (solver (p1, []));
+    assert (solver p1 []);
 
     (* Should return false *)
-    assert (not (solver ([], g1)));
+    assert (not (solver [] g1));
 
     (* Should return true *)
-    assert (solver (p1, g1));
+    assert (solver p1 g1);
 
     (* Should return false *)
-    assert (not (solver (p1, g2)));
+    assert (not (solver p1 g2));
 
     (* Order of rules does not matter! *)
-    assert (solver (p2, g3));
+    assert (solver p2 g3);
 ;;
 
 run_test_cases solve_mrec;;
 run_test_cases solve;;
+
