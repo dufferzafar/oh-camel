@@ -163,6 +163,10 @@ let print_subst s =
 let print_goal g =
     match g with
     | Node (p, trm_lst) ->
+        (*
+            The term list will contain contain constants or variables
+            so we join them with ,
+        *)
         let joint =
             List.fold_left
                 (fun acc x -> acc ^ ", " ^ term_to_string x)
@@ -171,6 +175,42 @@ let print_goal g =
         in
         Printf.printf "%s(%s)" p joint
 ;;
+
+(*
+    subst : term -> substitution -> term
+
+    Apply a substitution on a term
+*)
+let rec apply_subst_to_term trm sub =
+    match trm with
+
+    | C c -> C c
+
+    | V v  ->
+    (
+        try
+            (* Replace this term with its substitution *)
+            let _, t = List.find (fun (x, t) -> v = x ) sub in t
+        with
+            (* If not found just return the variable un-modified *)
+            Not_found -> V v
+    )
+
+    | Node (pred, trm_list) ->
+        Node (pred, List.map (fun t -> apply_subst_to_term t sub) trm_list)
+;;
+
+let apply_subst_to_formula f sub =
+    match f with
+    | Node (pred, trm_list) ->
+        Node (pred, List.map (fun t -> apply_subst_to_term t sub) trm_list)
+;;
+
+(* Apply substitution to a body and return new body *)
+let apply_subst_to_body body sub =
+    List.fold_left (fun acc f -> union acc [(apply_subst_to_formula f sub)]) [] body
+;;
+
 
 (*
     solve : program -> goal -> bool
@@ -198,7 +238,7 @@ let rec solve program goals =
 and solve_one program goal =
 
     (* Debugging... *)
-    let _ = print_string "Solving Goal: "; print_goal goal; print_string "\n"; in
+    let _ = print_string "\nSolving Goal: "; print_goal goal; print_string "\n"; in
 
     (* Define a new function so that original program value remains *)
     let rec resolve p g =
@@ -236,10 +276,10 @@ and solve_one program goal =
             | Rule (h, b) ->
             (
                 try
-                    let _ = mgu_of_formula g h in
+                    let t = mgu_of_formula g h in
 
                         (* See if the body of this rule can be solved *)
-                        solve program b
+                        solve program (apply_subst_to_body b t)
 
                         (* Otherwise keep trying! *)
                         || resolve rest g
