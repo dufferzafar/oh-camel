@@ -38,6 +38,171 @@ type goal = atomic_formula list;;
 type program = clause list;;
 
 (*
+    =====================================================
+    =====================================================
+*)
+
+(*
+    Set related functions
+*)
+let member x s = List.mem x s;;
+let rec union s1 s2 =
+    match s1 with
+        [] -> s2
+    | h::t ->
+        if member h s2 then
+            union t s2
+        else
+            h :: (union t s2)
+;;
+
+(*
+    =====================================================
+    =====================================================
+*)
+
+exception NOT_UNIFIABLE;;
+
+(*
+    occurs : variable -> term -> bool
+    Check whether a variable occurs in a term.
+*)
+let rec occurs x t =
+    match t with
+      | V v -> v = x
+      | C _ -> false
+      | Node (_, trm_lst) -> List.exists (occurs x) trm_lst
+
+(*
+    mgu : term -> term -> substitution
+
+    returns the most general unifier of two terms (if it exists)
+    otherwise raises an exception NOT_UNIFIABLE
+*)
+let mgu t1 t2 =
+
+    let rec mgu_of_terms p1 p2 =
+
+        match (p1, p2) with
+
+        | (C a, C b) ->
+            if a = b then
+                []
+            else
+                raise NOT_UNIFIABLE
+
+        | (V v, C a) | (C a, V v) ->
+            [(v, C a)]
+
+        (* A constant can never be equal to a term *)
+        | (C _, Node _) | (Node _, C _) ->
+            raise NOT_UNIFIABLE
+
+        (* Two different variables *)
+        | (V v, V w) ->
+            if v <> w then
+                [(v, V w)]
+            else
+                []
+
+        (* A variable and a node *)
+        | (V v, (Node _ as t)) | ( Node _ as t, V v) ->
+            if not (occurs v t) then
+                [(v, t)]
+            else
+                raise NOT_UNIFIABLE
+
+        (* Two different nodes *)
+        | (Node (f, trm_list_1), Node (g, trm_list_2)) ->
+            if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
+            then
+                let paired_lists = List.combine trm_list_1 trm_list_2
+                in mgu_of_children paired_lists
+            else
+                raise NOT_UNIFIABLE
+
+    (* Can convert this mutual recursion to List.fold_left2 *)
+    and mgu_of_children pairs =
+        match pairs with
+        | [] -> []
+        | (c1, c2) :: rest -> union (mgu_of_terms c1 c2) (mgu_of_children rest)
+
+    in mgu_of_terms t1 t2
+;;
+
+(*
+    =====================================================
+    =====================================================
+*)
+
+(*
+    solve : program -> goal -> bool
+
+    Return whether a goal can be solved from a program
+
+    This uses mutual recursion for backtracking
+    (essentially using the Call-stack)
+*)
+(* Solve a list of goals *)
+let rec solve program goals =
+    match goals with
+
+    | [] -> true
+    | goal::rest ->
+
+        (* Solve the first goal *)
+        solve_one program goal
+
+        (* And solve the rest of the goals *)
+        && solve program rest
+
+(* Solve one goal *)
+and solve_one program goal =
+
+    (* Define a new function so that original program value remains *)
+    let rec resolve p g =
+
+        match p with
+
+        (* Can't prove a goal from an empty program *)
+        | [] -> false
+
+        | c::rest ->
+        (
+            match c with
+            | Fact h ->
+            (
+                (*
+                    Try to find a substitution that makes the goal equal to head.
+                *)
+                try
+                    let t = mgu g h in true
+                with
+                    NOT_UNIFIABLE -> resolve rest g
+            )
+
+            | Rule (h, b) ->
+            (
+                if g = h then
+                    (* See if the body of this rule can be solved *)
+                    solve program b
+
+                    (* Otherwise keep trying! *)
+                    || resolve rest g
+                else
+                    resolve rest g
+            )
+        )
+
+    in resolve program goal
+;;
+
+(*
+    =====================================================
+    =====================================================
+*)
+
+(*
     Test Cases
 *)
 
@@ -143,3 +308,18 @@ let g1 = ("father", [V "X", C "harry"]);;
 
 (* Who loved lilly? *)
 let g2 = ("loves", [V "Z", C "lilly"]);;
+
+(* Who loves each other? *)
+let g3 = ("loves", [V "Z", V "T"]);;
+
+(*
+    The answer can be true/false OR a substitution list.
+    But the list has to be evaluated lazily (if stdin == ";" etc.)
+
+    Substitution
+    MGU
+    Solver
+*)
+
+(*  *)
+type substitution = (variable * term) list;;
