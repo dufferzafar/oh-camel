@@ -79,56 +79,63 @@ let rec occurs x t =
     returns the most general unifier of two terms (if it exists)
     otherwise raises an exception NOT_UNIFIABLE
 *)
-let mgu t1 t2 =
+let rec mgu_of_terms p1 p2 =
 
-    let rec mgu_of_terms p1 p2 =
+    match (p1, p2) with
 
-        match (p1, p2) with
-
-        | (C a, C b) ->
-            if a = b then
-                []
-            else
-                raise NOT_UNIFIABLE
-
-        | (V v, C a) | (C a, V v) ->
-            [(v, C a)]
-
-        (* A constant can never be equal to a term *)
-        | (C _, Node _) | (Node _, C _) ->
+    | (C a, C b) ->
+        if a = b then
+            []
+        else
             raise NOT_UNIFIABLE
 
-        (* Two different variables *)
-        | (V v, V w) ->
-            if v <> w then
-                [(v, V w)]
-            else
-                []
+    | (V v, C a) | (C a, V v) ->
+        [(v, C a)]
 
-        (* A variable and a node *)
-        | (V v, (Node _ as t)) | ( Node _ as t, V v) ->
-            if not (occurs v t) then
-                [(v, t)]
-            else
-                raise NOT_UNIFIABLE
+    (* A constant can never be equal to a term *)
+    | (C _, Node _) | (Node _, C _) ->
+        raise NOT_UNIFIABLE
 
-        (* Two different nodes *)
-        | (Node (f, trm_list_1), Node (g, trm_list_2)) ->
-            if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
-            then
-                let paired_lists = List.combine trm_list_1 trm_list_2
-                in mgu_of_children paired_lists
-            else
-                raise NOT_UNIFIABLE
+    (* Two different variables *)
+    | (V v, V w) ->
+        if v <> w then
+            [(v, V w)]
+        else
+            []
 
-    (* Can convert this mutual recursion to List.fold_left2 *)
-    and mgu_of_children pairs =
-        match pairs with
-        | [] -> []
-        | (c1, c2) :: rest -> union (mgu_of_terms c1 c2) (mgu_of_children rest)
+    (* A variable and a node *)
+    | (V v, (Node _ as t)) | ( Node _ as t, V v) ->
+        if not (occurs v t) then
+            [(v, t)]
+        else
+            raise NOT_UNIFIABLE
 
-    in mgu_of_terms t1 t2
-;;
+    (* Two different nodes *)
+    | (Node (f, trm_list_1), Node (g, trm_list_2)) ->
+        if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
+        then
+            let paired_lists = List.combine trm_list_1 trm_list_2
+            in mgu_of_children paired_lists
+        else
+            raise NOT_UNIFIABLE
+
+(* Can convert this mutual recursion to List.fold_left2 *)
+and mgu_of_children pairs =
+    match pairs with
+    | [] -> []
+    | (c1, c2) :: rest -> union (mgu_of_terms c1 c2) (mgu_of_children rest)
+
+(* TODO: Any way to remove this duplication of code? *)
+let mgu_of_formula f1 f2 =
+    match (f1, f2) with
+
+    (Node (f, trm_list_1), Node (g, trm_list_2)) ->
+        if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
+        then
+            let paired_lists = List.combine trm_list_1 trm_list_2
+            in mgu_of_children paired_lists
+        else
+            raise NOT_UNIFIABLE
 
 (*
     =====================================================
@@ -176,7 +183,9 @@ and solve_one program goal =
                     Try to find a substitution that makes the goal equal to head.
                 *)
                 try
-                    let t = mgu g h in true
+                    let _ = mgu_of_formula g h in true
+                    let _ = print_subst t in
+                    resolve rest g || true
                 with
                     NOT_UNIFIABLE -> resolve rest g
             )
