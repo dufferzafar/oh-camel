@@ -138,18 +138,19 @@ let mgu_of_formula f1 f2 =
 
 (* type substitution = (variable * term) list;; *)
 
+(* Return a string representation of a term *)
 let term_to_string t =
     match t with
     | C c -> c
     | V v -> v
     | _   -> ""
 
+(* Print a substitution list: X = const *)
 let print_subst s =
     let rec print_subs_helper s =
         match s with
         | [] -> ()
         | (v, t)::rest ->
-            (* h is variable * term *)
             Printf.printf "\n%s = %s" v (term_to_string t);
             print_subs_helper rest
     in
@@ -158,6 +159,7 @@ let print_subst s =
         print_string " ";
 ;;
 
+(* Print a goal *)
 let print_goal g =
     match g with
     | Node (p, trm_lst) ->
@@ -233,14 +235,17 @@ and solve_one program goal =
 
             | Rule (h, b) ->
             (
-                if g = h then
-                    (* See if the body of this rule can be solved *)
-                    solve program b
+                try
+                    let _ = mgu_of_formula g h in
 
-                    (* Otherwise keep trying! *)
-                    || resolve rest g
-                else
-                    resolve rest g
+                        (* See if the body of this rule can be solved *)
+                        solve program b
+
+                        (* Otherwise keep trying! *)
+                        || resolve rest g
+                with
+                    (* Couldn't find a substitution, keep going *)
+                    NOT_UNIFIABLE -> resolve rest g
             )
         )
 
