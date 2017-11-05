@@ -155,11 +155,11 @@ let print_subst s =
         | [] -> ()
         | (v, t)::rest ->
             (* h is variable * term *)
-            Printf.printf "%s = %s \n" v (term_to_string t);
+            Printf.printf "\n%s = %s" v (term_to_string t);
             print_subs_helper rest
     in
     print_subs_helper s;
-    (* print_endline ";" *)
+    print_string " ";
 ;;
 
 (*
@@ -170,6 +170,7 @@ let print_subst s =
     This uses mutual recursion for backtracking
     (essentially using the Call-stack)
 *)
+
 (* Solve a list of goals *)
 let rec solve program goals =
     match goals with
@@ -199,14 +200,21 @@ and solve_one program goal =
             match c with
             | Fact h ->
             (
-                (*
-                    Try to find a substitution that makes the goal equal to head.
-                *)
+                (* Try to find a substitution that makes the goal equal to head *)
                 try
-                    let _ = mgu_of_formula g h in true
+                    (* We found a substitution, print it and ask if we should continue *)
+                    let t = mgu_of_formula g h in
                     let _ = print_subst t in
-                    resolve rest g || true
+
+                    let choice = read_line() in
+                        (* If the user wants, then keep going *)
+                        if choice = ";" then
+                            resolve rest g || true
+                        else
+                            let _ = print_string "\n" in
+                            true
                 with
+                (* Couldn't find a substitution, keep going *)
                     NOT_UNIFIABLE -> resolve rest g
             )
 
