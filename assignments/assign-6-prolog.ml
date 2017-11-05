@@ -109,10 +109,10 @@ let rec mgu_of_terms p1 p2 =
             raise NOT_UNIFIABLE
 
     (* Two different nodes *)
-    | (Node (f, trm_list_1), Node (g, trm_list_2)) ->
-        if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
+    | (Node (f, trm_lst_1), Node (g, trm_lst_2)) ->
+        if (f = g) && (List.length trm_lst_1 = List.length trm_lst_2)
         then
-            List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_list_1 trm_list_2
+            List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_lst_1 trm_lst_2
         else
             raise NOT_UNIFIABLE
 
@@ -124,10 +124,10 @@ let rec mgu_of_terms p1 p2 =
 let mgu_of_formula f1 f2 =
     match (f1, f2) with
 
-    (Node (f, trm_list_1), Node (g, trm_list_2)) ->
-        if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
+    (Node (f, trm_lst_1), Node (g, trm_lst_2)) ->
+        if (f = g) && (List.length trm_lst_1 = List.length trm_lst_2)
         then
-            List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_list_1 trm_list_2
+            List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_lst_1 trm_lst_2
         else
             raise NOT_UNIFIABLE
 
