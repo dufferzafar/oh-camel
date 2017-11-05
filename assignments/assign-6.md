@@ -11,21 +11,24 @@ II
 
 1. Provide definitions or the following types and base your program on these types defined:
 
-    - type variable = string;;
-    - type constant = string;;
-    - type predicate = string;;
+```ocaml
+type variable = string;;
+type constant = string;;
+type predicate = string;;
 
-    - type term = V of variable | C of constant | Node of ???
+type term = V of variable | C of constant | Node of ???
 
-    - type atomic_formula = ???
+type atomic_formula = ???
 
-    - type clause = Fact of ??? | Rule of  ???
+type clause = Fact of ??? | Rule of  ???
 
-    - type goal = atomic_formula list;;
+type goal = atomic_formula list;;
 
-    - type program = clause list;;
+type program = clause list;;
 
-    Each of these types has a unique definition. You are required to understand what a type represents (understand theory properly), and provide a suitable definition. Correct definition is key to correct implementation of the solution.
+```
+
+Each of these types has a unique definition. You are required to understand what a type represents (understand theory properly), and provide a suitable definition. Correct definition is key to correct implementation of the solution.
 
 2. Write function(s) to resolve as a Prolog interpreter would. (Consider cases of goals with constants and variables and cases of resolving for one solution or repeated resolving).
 
