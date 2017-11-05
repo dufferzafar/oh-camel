@@ -24,9 +24,7 @@ type term =
 
 type atomic_formula = Node of predicate * (term list);;
 
-(* H of ? *)
 type head = atomic_formula;;
-(* B of ? *)
 type body = atomic_formula list;;
 
 type clause =
@@ -125,7 +123,11 @@ and mgu_of_children pairs =
     | [] -> []
     | (c1, c2) :: rest -> union (mgu_of_terms c1 c2) (mgu_of_children rest)
 
-(* TODO: Any way to remove this duplication of code? *)
+(*
+    Term and Atomic Formulae have different types so we need this bit
+
+    TODO: Any way to remove this duplication of code?
+*)
 let mgu_of_formula f1 f2 =
     match (f1, f2) with
 
@@ -158,8 +160,9 @@ let print_subst s =
             Printf.printf "\n%s = %s" v (term_to_string t);
             print_subs_helper rest
     in
-    print_subs_helper s;
-    print_string " ";
+    if s <> [] then
+        print_subs_helper s;
+        print_string " ";
 ;;
 
 (*
@@ -206,15 +209,17 @@ and solve_one program goal =
                     let t = mgu_of_formula g h in
                     let _ = print_subst t in
 
-                    let choice = read_line() in
+                    (* Ask for choice only if the substitution was non empty *)
+                    let choice = if t <> [] then read_line() else "."
+                    in
                         (* If the user wants, then keep going *)
                         if choice = ";" then
                             resolve rest g || true
-                        else
+                        else (* choice = "." *)
                             let _ = print_string "\n" in
                             true
                 with
-                (* Couldn't find a substitution, keep going *)
+                    (* Couldn't find a substitution, keep going *)
                     NOT_UNIFIABLE -> resolve rest g
             )
 
