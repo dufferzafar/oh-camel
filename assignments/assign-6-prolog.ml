@@ -142,6 +142,26 @@ let mgu_of_formula f1 f2 =
     =====================================================
 *)
 
+(* type substitution = (variable * term) list;; *)
+
+let term_to_string t =
+    match t with
+    | C c -> c
+    | _   -> ""
+
+let print_subst s =
+    let rec print_subs_helper s =
+        match s with
+        | [] -> ()
+        | (v, t)::rest ->
+            (* h is variable * term *)
+            Printf.printf "%s = %s \n" v (term_to_string t);
+            print_subs_helper rest
+    in
+    print_subs_helper s;
+    (* print_endline ";" *)
+;;
+
 (*
     solve : program -> goal -> bool
 
@@ -333,6 +353,3 @@ let g3 = Node("loves", [V "Z"; V "T"]);;
     MGU
     Solver
 *)
-
-(*  *)
-type substitution = (variable * term) list;;
