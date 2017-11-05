@@ -112,16 +112,9 @@ let rec mgu_of_terms p1 p2 =
     | (Node (f, trm_list_1), Node (g, trm_list_2)) ->
         if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
         then
-            let paired_lists = List.combine trm_list_1 trm_list_2
-            in mgu_of_children paired_lists
+            List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_list_1 trm_list_2
         else
             raise NOT_UNIFIABLE
-
-(* Can convert this mutual recursion to List.fold_left2 *)
-and mgu_of_children pairs =
-    match pairs with
-    | [] -> []
-    | (c1, c2) :: rest -> union (mgu_of_terms c1 c2) (mgu_of_children rest)
 
 (*
     Term and Atomic Formulae have different types so we need this bit
@@ -134,8 +127,7 @@ let mgu_of_formula f1 f2 =
     (Node (f, trm_list_1), Node (g, trm_list_2)) ->
         if (f = g) && (List.length trm_list_1 = List.length trm_list_2)
         then
-            let paired_lists = List.combine trm_list_1 trm_list_2
-            in mgu_of_children paired_lists
+            List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_list_1 trm_list_2
         else
             raise NOT_UNIFIABLE
 
