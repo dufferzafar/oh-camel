@@ -141,6 +141,7 @@ let mgu_of_formula f1 f2 =
 let term_to_string t =
     match t with
     | C c -> c
+    | V v -> v
     | _   -> ""
 
 let print_subst s =
@@ -155,6 +156,18 @@ let print_subst s =
     if s <> [] then
         print_subs_helper s;
         print_string " ";
+;;
+
+let print_goal g =
+    match g with
+    | Node (p, trm_lst) ->
+        let joint =
+            List.fold_left
+                (fun acc x -> acc ^ ", " ^ term_to_string x)
+                (term_to_string (List.hd trm_lst))
+                (List.tl trm_lst)
+        in
+        Printf.printf "%s(%s)" p joint
 ;;
 
 (*
@@ -181,6 +194,9 @@ let rec solve program goals =
 
 (* Solve one goal *)
 and solve_one program goal =
+
+    (* Debugging... *)
+    let _ = print_string "Solving Goal: "; print_goal goal; print_string "\n"; in
 
     (* Define a new function so that original program value remains *)
     let rec resolve p g =
