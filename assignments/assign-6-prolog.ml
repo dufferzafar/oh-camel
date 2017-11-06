@@ -245,18 +245,21 @@ let hd_bdy cls =
 *)
 
 (* Solve a list of goals *)
-let rec solve program goals =
+let rec solve program goals ans =
     match goals with
 
-    | [] -> true
+    | [] ->
+
+        let _ = print_subst ans; print_string "\n"; in
+        true
 
     | goal::rest ->
 
         (* Solve the first goal *)
-        solve_one program goal rest
+        solve_one program goal rest ans
 
 (* Solve one goal *)
-and solve_one program goal other_goals =
+and solve_one program goal other_goals ans =
 
     (* Debugging... *)
     let _ = print_string "\nSolving Goal: "; print_goal goal; print_string "\n"; in
@@ -281,7 +284,7 @@ and solve_one program goal other_goals =
                 let new_goals = apply_subst_to_body (union other_goals bdy) subst in
 
                 (* If the new goals can be solved then we win! *)
-                if solve program new_goals then
+                if solve program new_goals (union subst ans) then
                     true
 
                 (* else we need to match the current goal with some other clause *)
