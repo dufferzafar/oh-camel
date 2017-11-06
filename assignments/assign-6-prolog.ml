@@ -421,23 +421,30 @@ let p1 = [
 (* Comes directly from the facts *)
 let g0 = Node("loves", [C "snape"; C "lilly"])
 
-(* Comes from the rule involving marriage  *)
-let g1 = Node("loves", [C "bill"; C "fleur"])
-
-(* Who is father of harry? *)
-let g1 = Node("father", [V "X"; C "harry"]);;
-
 (* Who loved lilly? *)
-let g2 = Node("loves", [V "Z"; C "lilly"]);;
+let g1 = Node("loves", [V "Z"; C "lilly"]);;
 
 (* Who loves each other? *)
-let g3 = Node("loves", [V "Z"; V "T"]);;
+let g2 = Node("loves", [V "Z"; V "T"]);;
 
+(* Who is the father of harry? *)
+let g3 = Node("father", [V "X"; C "harry"]);;
+
+(* Comes from the rule involving marriage  *)
+let g4 = Node("loves", [C "bill"; C "fleur"]);;
+
+(* Should be true *)
+let g5 = Node("daughter", [C "ginny"; C "molly"]);;
+
+(* Should be false *)
+let g6 = Node("daughter", [C "ginny"; C "james"]);;
+
+(* Should return multiple answers *)
+let g7 = Node("married", [V "X"; V "Y"]);;
 (*
-    The answer can be true/false OR a substitution list.
-    But the list has to be evaluated lazily (if stdin == ";" etc.)
+    Debugging
 
-    Substitution
-    MGU
-    Solver
+    let s1 = [("X", V "F"); ("C", C "harry")]
 *)
+
+let head_cls c = match c with Fact h | Rule (h, _) -> h;;
