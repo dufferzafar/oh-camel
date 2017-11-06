@@ -248,7 +248,8 @@ let rec compose s1 s2 =
         | (((v1, t1) :: rest1), ((v2, t2) :: rest2)) ->
 
             if (occurs v2 t1) then
-                union acc [(v1, apply_subst_to_term t1 [(v2, t2)]); (v2, t2)]
+                compose_with_acc rest1 rest2
+                (union acc [(v1, apply_subst_to_term t1 [(v2, t2)]); (v2, t2)])
             else
                 compose_with_acc rest1 rest2 (union [(v1, t1); (v2, t2)] acc)
     )
