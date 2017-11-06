@@ -260,11 +260,13 @@ and solve_one program goal =
                     let _ = print_subst t in
 
                     (* Ask for choice only if the substitution was non empty *)
-                    let choice = if t <> [] then read_line() else "."
+                    let choice = if t <> [] then read_line() else "-"
                     in
                         (* If the user wants, then keep going *)
                         if choice = ";" then
                             resolve rest g || true
+                        else if choice = "-" then
+                            true
                         else (* choice = "." *)
                             let _ = print_string "\n" in
                             true
