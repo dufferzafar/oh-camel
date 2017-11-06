@@ -67,6 +67,26 @@ let term_to_string t =
     | C c -> c
     | V v -> v
     | _   -> ""
+;;
+
+(* Keep track of tuples that have already been printed *)
+let already_printed = ref [];;
+
+(*
+    Returns what will be printed from a substitution
+
+    Also keep in mind the variables that the user has asked for (to_do)
+*)
+let rec find_ans_from_sub s to_do =
+    match s with
+    | [] -> ""
+    | (v, t) :: rest ->
+        (* Only counts if the user actually wanted value of this variable *)
+        if List.exists (fun x -> x = v) to_do then
+            (Printf.sprintf "\n%s = %s" v (term_to_string t)) ^ (find_ans_from_sub rest to_do)
+        else
+            (find_ans_from_sub rest to_do)
+;;
 
 (*
     Print answer substitution list as X = const
@@ -74,21 +94,23 @@ let term_to_string t =
     Also keep in mind the variables that the user has asked for (to_do)
 *)
 let print_ans s to_do =
+    (* let _ = print_int (List.length !already_printed) in *)
+    if
+        (* there are some variables that we need values of *)
+        to_do <> []
 
-    let rec print_subs_helper s =
-        match s with
-        | [] -> ()
-        | (v, t)::rest ->
+        (* and the substitution is non-empty *)
+        && s <> []
+    then
+        (* Find what would be printed from this substitution *)
+        let to_print = find_ans_from_sub s to_do in
+        (* let _ = print_string to_print in *)
 
-            (* Only print if the user wants value of this variable *)
-            if List.exists (fun x -> x = v) to_do then
-                Printf.printf "\n%s = %s" v (term_to_string t);
-                print_subs_helper rest;
-    in
-
-    if s <> [] && to_do <> [] then
-        print_subs_helper s;
-        print_string " ";
+        (* If it has not been printed already *)
+        if not (List.mem to_print !already_printed) then
+            print_string to_print;
+            print_string " ";
+            already_printed := to_print::!already_printed;
 ;;
 
 (* Print a goal *)
@@ -373,6 +395,9 @@ let rec find_vars_goals goals =
 
 (* The main caller; sets the stage for solve *)
 let solver program goals =
+
+    (* Reset substitutions printed *)
+    already_printed := [];
 
     let vars_to_do = find_vars_goals goals in
 
