@@ -262,7 +262,7 @@ and solve_one program goal other_goals =
     let _ = print_string "\nSolving Goal: "; print_goal goal; print_string "\n"; in
 
     (* Define a new function so that original program value remains *)
-    let rec resolve p g glist =
+    let rec resolve p g =
 
         match p with
 
@@ -286,15 +286,15 @@ and solve_one program goal other_goals =
 
                 (* else we need to match the current goal with some other clause *)
                 else
-                    resolve rest g glist
+                    resolve rest g
 
             with
                 (* Couldn't find a substitution, keep going *)
-                NOT_UNIFIABLE -> resolve rest g glist
+                NOT_UNIFIABLE -> resolve rest g
 
         )
 
-    in resolve program goal other_goals
+    in resolve program goal
 ;;
 
 (*
