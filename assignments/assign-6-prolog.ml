@@ -342,8 +342,8 @@ let wt5 = Fact( Node( "witch", [C "lilly"]) );;
 let mr1 = Fact( Node( "married", [C "harry"; C "ginny"]) );;
 let mr2 = Fact( Node( "married", [C "ron"; C "hermione"]) );;
 let mr3 = Fact( Node( "married", [C "arthur"; C "molly"]) );;
-let mr3 = Fact( Node( "married", [C "james"; C "lilly"]) );;
-let mr3 = Fact( Node( "married", [C "bill"; C "fleur"]) );;
+let mr4 = Fact( Node( "married", [C "james"; C "lilly"]) );;
+let mr5 = Fact( Node( "married", [C "bill"; C "fleur"]) );;
 
 let lv1 = Fact( Node( "loves", [C "james"; C "lilly"]) );;
 let lv2 = Fact( Node( "loves", [C "snape"; C "lilly"]) );;
@@ -406,7 +406,7 @@ let p1 = [
     (* facts *)
     wz1; wz2; wz3; wz4; wz5; wz6;
     wt1; wt2; wt3; wt4; wt5;
-    mr1; mr2; mr3; mr3; mr3;
+    mr1; mr2; mr3; mr4; mr5;
     lv1; lv2; lv3; lv4;
     pt1; pt2; pt3; pt4; pt5; pt6; pt7; pt8;
 
