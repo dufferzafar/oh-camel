@@ -228,6 +228,13 @@ let apply_subst_to_body body sub =
     =====================================================
 *)
 
+(* Return head and body of a clause *)
+let hd_bdy cls =
+    match cls with
+    | Fact hd -> (hd, [])
+    | Rule (hd, bdy) -> (hd, bdy)
+;;
+
 (*
     solve : program -> goal -> bool
 
@@ -264,32 +271,27 @@ and solve_one program goal other_goals =
 
         | cls::rest ->
         (
-            match cls with
-            | Fact head ->
-            (
-                try
-                    let t = mgu_of_formula g head in
-                    if solve program (apply_subst_to_body other_goals t) = true then
-                        true
-                    else
-                        resolve rest g glist
-                with
-                    (* Couldn't find a substitution, keep going *)
-                    NOT_UNIFIABLE -> resolve rest g glist
-            )
+            try
+                let hd, bdy = hd_bdy cls in
 
-            | Rule (head, body) ->
-            (
-                try
-                    let t = mgu_of_formula g head in
-                    if solve program (apply_subst_to_body (union other_goals body) t) = true then
-                        true
-                    else
-                        resolve rest g glist
-                with
-                    (* Couldn't find a substitution, keep going *)
-                    NOT_UNIFIABLE -> resolve rest g glist
-            )
+                (* Try to find a substitution that unifies the goal and head *)
+                let subst = mgu_of_formula g hd in
+
+                (* Find the new set of goals according to the substitution *)
+                let new_goals = apply_subst_to_body (union other_goals bdy) subst in
+
+                (* If the new goals can be solved then we win! *)
+                if solve program new_goals then
+                    true
+
+                (* else we need to match the current goal with some other clause *)
+                else
+                    resolve rest g glist
+
+            with
+                (* Couldn't find a substitution, keep going *)
+                NOT_UNIFIABLE -> resolve rest g glist
+
         )
 
     in resolve program goal other_goals
