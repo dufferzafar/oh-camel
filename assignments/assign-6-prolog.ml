@@ -77,40 +77,15 @@ let already_printed = ref [];;
 
     Also keep in mind the variables that the user has asked for (to_do)
 *)
-let rec find_ans_from_sub s to_do =
+let rec find_to_print_from_sub s to_do =
     match s with
     | [] -> ""
     | (v, t) :: rest ->
         (* Only counts if the user actually wanted value of this variable *)
         if List.exists (fun x -> x = v) to_do then
-            (Printf.sprintf "\n%s = %s" v (term_to_string t)) ^ (find_ans_from_sub rest to_do)
+            (Printf.sprintf "\n%s = %s" v (term_to_string t)) ^ (find_to_print_from_sub rest to_do)
         else
-            (find_ans_from_sub rest to_do)
-;;
-
-(*
-    Print answer substitution list as X = const
-
-    Also keep in mind the variables that the user has asked for (to_do)
-*)
-let print_ans s to_do =
-    (* let _ = print_int (List.length !already_printed) in *)
-    if
-        (* there are some variables that we need values of *)
-        to_do <> []
-
-        (* and the substitution is non-empty *)
-        && s <> []
-    then
-        (* Find what would be printed from this substitution *)
-        let to_print = find_ans_from_sub s to_do in
-        (* let _ = print_string to_print in *)
-
-        (* If it has not been printed already *)
-        if not (List.mem to_print !already_printed) then
-            print_string to_print;
-            print_string " ";
-            already_printed := to_print::!already_printed;
+            (find_to_print_from_sub rest to_do)
 ;;
 
 (* Print a goal *)
@@ -308,17 +283,28 @@ let rec solve program goals ans to_do =
 
         let choice =
 
+            (* Find what would be printed from this substitution *)
+            let to_print = find_to_print_from_sub ans to_do in
+
             (* Only print ans if it contains variables that were needed *)
+            (* If it has not been printed already *)
             if ans <> [] && to_do <> [] then
-                let _ = print_ans ans to_do in
-                read_line()
+
+                    if not (List.mem to_print !already_printed) then
+                        let _ = print_string to_print in
+                        let _ = print_string " " in
+                        already_printed := to_print::!already_printed;
+
+                        read_line()
+                    else
+                        ":"
+
             else
-                "-"
+                "."
         in
             (* If the user wants more, then we still haven't "solved" so return false *)
-            if choice = ";" then
+            if choice = ";" || choice = ":" then
                 false
-            (* else, user is done - so are we *)
             else
                 true
 
@@ -536,6 +522,8 @@ let g7 = Node("married", [V "X"; V "Y"]);;
     Debugging
 
     let s1 = [("X", V "F"); ("C", C "harry")]
+    let s1 = [("Z", V "H5"); ("T", V "W5")];;
+    let s2 = [("H5", C "harry"); ("W5", C "ginny")];;
 *)
 
 let head_cls c = match c with Fact h | Rule (h, _) -> h;;
