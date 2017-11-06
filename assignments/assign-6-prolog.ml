@@ -242,76 +242,57 @@ let rec solve program goals =
     match goals with
 
     | [] -> true
+
     | goal::rest ->
 
         (* Solve the first goal *)
-        solve_one program goal
-
-        (* And solve the rest of the goals *)
-        && solve program rest
+        solve_one program goal rest
 
 (* Solve one goal *)
-and solve_one program goal =
+and solve_one program goal other_goals =
 
     (* Debugging... *)
     let _ = print_string "\nSolving Goal: "; print_goal goal; print_string "\n"; in
 
     (* Define a new function so that original program value remains *)
-    let rec resolve p g =
+    let rec resolve p g glist =
 
         match p with
 
         (* Can't prove a goal from an empty program *)
         | [] -> false
 
-        | c::rest ->
+        | cls::rest ->
         (
-            match c with
-            | Fact h ->
+            match cls with
+            | Fact head ->
             (
-                (* Try to find a substitution that makes the goal equal to head *)
                 try
-                    (* We found a substitution, print it and ask if we should continue *)
-                    let t = mgu_of_formula g h in
-
-                    (* Ask for choice only if the substitution was non empty *)
-                    let choice =
-                        if t <> [] then
-                            let _ = print_subst t in
-                            read_line()
-                        else
-                            "-"
-                    in
-                        (* If the user wants, then keep going *)
-                        if choice = ";" then
-                            resolve rest g || true
-                        else if choice = "-" then
-                            true
-                        else (* choice = "." *)
-                            let _ = print_string "\n" in
-                            true
+                    let t = mgu_of_formula g head in
+                    if solve program (apply_subst_to_body other_goals t) = true then
+                        true
+                    else
+                        resolve rest g glist
                 with
                     (* Couldn't find a substitution, keep going *)
-                    NOT_UNIFIABLE -> resolve rest g
+                    NOT_UNIFIABLE -> resolve rest g glist
             )
 
-            | Rule (h, b) ->
+            | Rule (head, body) ->
             (
                 try
-                    let t = mgu_of_formula g h in
-
-                        (* See if the body of this rule can be solved *)
-                        solve program (apply_subst_to_body b t)
-
-                        (* Otherwise keep trying! *)
-                        || resolve rest g
+                    let t = mgu_of_formula g head in
+                    if solve program (apply_subst_to_body (union other_goals body) t) = true then
+                        true
+                    else
+                        resolve rest g glist
                 with
                     (* Couldn't find a substitution, keep going *)
-                    NOT_UNIFIABLE -> resolve rest g
+                    NOT_UNIFIABLE -> resolve rest g glist
             )
         )
 
-    in resolve program goal
+    in resolve program goal other_goals
 ;;
 
 (*
