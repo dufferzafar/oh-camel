@@ -59,6 +59,51 @@ let rec union s1 s2 =
     =====================================================
 *)
 
+(* type substitution = (variable * term) list;; *)
+
+(* Return a string representation of a term *)
+let term_to_string t =
+    match t with
+    | C c -> c
+    | V v -> v
+    | _   -> ""
+
+(* Print a substitution list: X = const *)
+let print_subst s =
+    let rec print_subs_helper s =
+        match s with
+        | [] -> ()
+        | (v, t)::rest ->
+            Printf.printf "\n%s = %s" v (term_to_string t);
+            print_subs_helper rest
+    in
+    if s <> [] then
+        print_subs_helper s;
+        print_string " ";
+;;
+
+(* Print a goal *)
+let print_goal g =
+    match g with
+    | Node (p, trm_lst) ->
+        (*
+            The term list will contain contain constants or variables
+            so we join them with ,
+        *)
+        let joint =
+            List.fold_left
+                (fun acc x -> acc ^ ", " ^ term_to_string x)
+                (term_to_string (List.hd trm_lst))
+                (List.tl trm_lst)
+        in
+        Printf.printf "%s(%s)" p joint
+;;
+
+(*
+    =====================================================
+    =====================================================
+*)
+
 exception NOT_UNIFIABLE;;
 
 (*
@@ -70,6 +115,7 @@ let rec occurs x t =
       | V v -> v = x
       | C _ -> false
       | Node (_, trm_lst) -> List.exists (occurs x) trm_lst
+;;
 
 (*
     mgu : term -> term -> substitution
@@ -115,6 +161,7 @@ let rec mgu_of_terms p1 p2 =
             List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_lst_1 trm_lst_2
         else
             raise NOT_UNIFIABLE
+;;
 
 (*
     Term and Atomic Formulae have different types so we need this bit
@@ -130,51 +177,12 @@ let mgu_of_formula f1 f2 =
             List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_lst_1 trm_lst_2
         else
             raise NOT_UNIFIABLE
+;;
 
 (*
     =====================================================
     =====================================================
 *)
-
-(* type substitution = (variable * term) list;; *)
-
-(* Return a string representation of a term *)
-let term_to_string t =
-    match t with
-    | C c -> c
-    | V v -> v
-    | _   -> ""
-
-(* Print a substitution list: X = const *)
-let print_subst s =
-    let rec print_subs_helper s =
-        match s with
-        | [] -> ()
-        | (v, t)::rest ->
-            Printf.printf "\n%s = %s" v (term_to_string t);
-            print_subs_helper rest
-    in
-    if s <> [] then
-        print_subs_helper s;
-        print_string " ";
-;;
-
-(* Print a goal *)
-let print_goal g =
-    match g with
-    | Node (p, trm_lst) ->
-        (*
-            The term list will contain contain constants or variables
-            so we join them with ,
-        *)
-        let joint =
-            List.fold_left
-                (fun acc x -> acc ^ ", " ^ term_to_string x)
-                (term_to_string (List.hd trm_lst))
-                (List.tl trm_lst)
-        in
-        Printf.printf "%s(%s)" p joint
-;;
 
 (*
     subst : term -> substitution -> term
@@ -211,6 +219,10 @@ let apply_subst_to_body body sub =
     List.fold_left (fun acc f -> union acc [(apply_subst_to_formula f sub)]) [] body
 ;;
 
+(*
+    =====================================================
+    =====================================================
+*)
 
 (*
     solve : program -> goal -> bool
