@@ -68,16 +68,25 @@ let term_to_string t =
     | V v -> v
     | _   -> ""
 
-(* Print a substitution list: X = const *)
-let print_subst s =
+(*
+    Print answer substitution list as X = const
+
+    Also keep in mind the variables that the user has asked for (to_do)
+*)
+let print_ans s to_do =
+
     let rec print_subs_helper s =
         match s with
         | [] -> ()
         | (v, t)::rest ->
-            Printf.printf "\n%s = %s" v (term_to_string t);
-            print_subs_helper rest
+
+            (* Only print if the user wants value of this variable *)
+            if List.exists (fun x -> x = v) to_do then
+                Printf.printf "\n%s = %s" v (term_to_string t);
+                print_subs_helper rest;
     in
-    if s <> [] then
+
+    if s <> [] && to_do <> [] then
         print_subs_helper s;
         print_string " ";
 ;;
@@ -254,14 +263,15 @@ let rec solve program goals ans to_do =
 
             (* Only print ans if it contains variables that were needed *)
             if ans <> [] && to_do <> [] then
-                let _ = print_subst ans in
+                let _ = print_ans ans to_do in
                 read_line()
             else
                 "-"
         in
+            (* If the user wants more, then we still haven't "solved" so return false *)
             if choice = ";" then
-                (* This is the key! *)
                 false
+            (* else, user is done - so are we *)
             else
                 true
 
