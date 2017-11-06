@@ -233,6 +233,30 @@ let apply_subst_to_body body sub =
 ;;
 
 (*
+    compose : substitution -> substitution -> substitution
+
+    Return a composition of two substitutions
+*)
+let rec compose s1 s2 =
+
+    let rec compose_with_acc s1 s2 acc =
+    (
+        match (s1, s2) with
+
+        | ([], []) -> acc
+        | (l, []) | ([], l) -> union acc l
+        | (((v1, t1) :: rest1), ((v2, t2) :: rest2)) ->
+
+            if (occurs v2 t1) then
+                union acc [(v1, apply_subst_to_term t1 [(v2, t2)]); (v2, t2)]
+            else
+                compose_with_acc rest1 rest2 (union [(v1, t1); (v2, t2)] acc)
+    )
+    in
+    compose_with_acc s1 s2 []
+;;
+
+(*
     =====================================================
     =====================================================
 *)
@@ -306,7 +330,7 @@ and solve_one program goal other_goals ans to_do =
                 let new_goals = apply_subst_to_body (union other_goals bdy) subst in
 
                 (* If the new goals can be solved then we win! *)
-                if solve program new_goals (union subst ans) to_do then
+                if solve program new_goals (compose ans subst) to_do then
                     true
 
                 (* else we need to match the current goal with some other clause *)
