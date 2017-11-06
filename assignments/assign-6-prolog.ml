@@ -250,8 +250,18 @@ let rec solve program goals ans =
 
     | [] ->
 
-        let _ = print_subst ans; print_string "\n"; in
-        true
+        let choice =
+            if ans <> [] then
+                let _ = print_subst ans in
+                read_line()
+            else
+                "-"
+        in
+            if choice = ";" then
+                (* This is the key! *)
+                false
+            else
+                true
 
     | goal::rest ->
 
