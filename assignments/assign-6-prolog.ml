@@ -174,6 +174,10 @@ let mgu_of_formula f1 f2 =
     (Node (f, trm_lst_1), Node (g, trm_lst_2)) ->
         if (f = g) && (List.length trm_lst_1 = List.length trm_lst_2)
         then
+            (* Debugging *)
+            (* let _ = print_goal f1; print_string "\n"; in *)
+            (* let _ = print_goal f2; print_string "\n"; in *)
+
             List.fold_left2 (fun acc c1 c2 -> union acc (mgu_of_terms c1 c2)) [] trm_lst_1 trm_lst_2
         else
             raise NOT_UNIFIABLE
@@ -269,10 +273,14 @@ and solve_one program goal =
                 try
                     (* We found a substitution, print it and ask if we should continue *)
                     let t = mgu_of_formula g h in
-                    let _ = print_subst t in
 
                     (* Ask for choice only if the substitution was non empty *)
-                    let choice = if t <> [] then read_line() else "-"
+                    let choice =
+                        if t <> [] then
+                            let _ = print_subst t in
+                            read_line()
+                        else
+                            "-"
                     in
                         (* If the user wants, then keep going *)
                         if choice = ";" then
