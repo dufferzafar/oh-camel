@@ -357,42 +357,42 @@ let pt8 = Fact( Node( "parent", [C "lilly"; C "harry"]) );;
 
 (* Rules: head :- body *)
 let r1 = Rule(
-    Node("father", [V "F"; V "C"]),
+    Node("father", [V "F1"; V "C1"]),
     [
-        Node("wizard", [V "F"]);
-        Node("parent", [V "F"; V "C"])
+        Node("wizard", [V "F1"]);
+        Node("parent", [V "F1"; V "C1"])
     ]
 );;
 
 let r2 = Rule(
-    Node("mother", [V "M"; V "C"]),
+    Node("mother", [V "M2"; V "C2"]),
     [
-        Node("witch", [V "M"]);
-        Node("parent", [V "M"; V "C"])
+        Node("witch", [V "M2"]);
+        Node("parent", [V "M2"; V "C2"])
     ]
 );;
 
 let r3 = Rule(
-    Node("son", [V "S"; V "P"]),
+    Node("son", [V "S3"; V "P3"]),
     [
-        Node("wizard", [V "S"]);
-        Node("parent", [V "P"; V "S"])
+        Node("wizard", [V "S3"]);
+        Node("parent", [V "P3"; V "S3"])
     ]
 );;
 
 let r4 = Rule(
-    Node("daughter", [V "D"; V "P"]),
+    Node("daughter", [V "D4"; V "P4"]),
     [
-        Node("witch", [V "D"]);
-        Node("parent", [V "P"; V "D"])
+        Node("witch", [V "D4"]);
+        Node("parent", [V "P4"; V "D4"])
     ]
 );;
 
 (* Another definition of loves *)
 let r5 = Rule(
-    Node("loves", [V "X"; V "Y"]),
+    Node("loves", [V "H5"; V "W5"]),
     [
-        Node("married", [V "X"; V "Y"])
+        Node("married", [V "H5"; V "W5"])
     ]
 )
 
