@@ -208,14 +208,14 @@ let rec apply_subst_to_term trm sub =
             Not_found -> V v
     )
 
-    | Node (pred, trm_list) ->
-        Node (pred, List.map (fun t -> apply_subst_to_term t sub) trm_list)
+    | Node (pred, trm_lst) ->
+        Node (pred, List.map (fun t -> apply_subst_to_term t sub) trm_lst)
 ;;
 
 let apply_subst_to_formula f sub =
     match f with
-    | Node (pred, trm_list) ->
-        Node (pred, List.map (fun t -> apply_subst_to_term t sub) trm_list)
+    | Node (pred, trm_lst) ->
+        Node (pred, List.map (fun t -> apply_subst_to_term t sub) trm_lst)
 ;;
 
 (* Apply substitution to a body and return new body *)
@@ -245,13 +245,15 @@ let hd_bdy cls =
 *)
 
 (* Solve a list of goals *)
-let rec solve program goals ans =
+let rec solve program goals ans to_do =
     match goals with
 
     | [] ->
 
         let choice =
-            if ans <> [] then
+
+            (* Only print ans if it contains variables that were needed *)
+            if ans <> [] && to_do <> [] then
                 let _ = print_subst ans in
                 read_line()
             else
@@ -266,10 +268,10 @@ let rec solve program goals ans =
     | goal::rest ->
 
         (* Solve the first goal *)
-        solve_one program goal rest ans
+        solve_one program goal rest ans to_do
 
 (* Solve one goal *)
-and solve_one program goal other_goals ans =
+and solve_one program goal other_goals ans to_do =
 
     (* Debugging... *)
     let _ = print_string "\nSolving Goal: "; print_goal goal; print_string "\n"; in
@@ -294,7 +296,7 @@ and solve_one program goal other_goals ans =
                 let new_goals = apply_subst_to_body (union other_goals bdy) subst in
 
                 (* If the new goals can be solved then we win! *)
-                if solve program new_goals (union subst ans) then
+                if solve program new_goals (union subst ans) to_do then
                     true
 
                 (* else we need to match the current goal with some other clause *)
@@ -308,6 +310,39 @@ and solve_one program goal other_goals ans =
         )
 
     in resolve program goal
+;;
+
+(* Return all variables occurring in a term *)
+let rec find_vars_term trm =
+    match trm with
+    | C c -> []
+    | V v -> [v]
+    | Node (_, trm_lst) ->
+        List.fold_left (fun acc t -> union acc (find_vars_term t)) [] trm_lst
+;;
+
+(* Could convert to left recursion - explicit acculumator *)
+(*
+    Return all variables occurring in a list of goals
+
+    These are the variables that we need to find the bindings for!
+*)
+let rec find_vars_goals goals =
+    match goals with
+    | [] -> []
+    | Node (_, trm_lst) :: rest ->
+        union
+            (List.fold_left (fun acc t -> union acc (find_vars_term t)) [] trm_lst)
+            (find_vars_goals rest)
+;;
+
+(* The main caller; sets the stage for solve *)
+let solver program goals =
+
+    let vars_to_do = find_vars_goals goals in
+
+    (* Variables to find *)
+    solve program goals [] vars_to_do
 ;;
 
 (*
