@@ -63,3 +63,28 @@ hastype(Gamma, inr(E), sum(_, T2)) :-
 
 %% Or Eliminiation
 %% match with?
+hastype(Gamma, case(E0, inl(X), inr(Y), E1, E2), T3) :-
+    hastype(Gamma, X, T1),
+    hastype(Gamma, Y, T2),
+    hastype(Gamma, E0, sum(T1, T2)),
+    hastype(Gamma, E1, T3),
+    hastype(Gamma, E2, T3).
+
+
+%% Function abstraction
+query(hastype([(v(x), int)], abs(v(x), v(x)), _)).
+query(hastype([(v(x), int), (v(y), char)], abs(v(x), v(y)), _)).
+
+%% Function application
+query(hastype([(v(x), int), (v(y), char)], app(abs(v(x), v(y)), v(x)), _)).
+query(hastype([(v(x), int), (v(y), char)], app(abs(v(x), v(y)), v(y)), _)).
+
+%% Tuples
+query(hastype([(v(x), int), (v(y), str)], pair(v(x), v(y)), _)).
+query(hastype(_, pair(v(x), v(y)), prod(int, str))).
+
+writeln(T) :- write(T), nl.
+main :-
+    forall(query(Q), (Q -> writeln(true: Q) ; writeln(false: Q)))
+    %% ,halt
+    .
