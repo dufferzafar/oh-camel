@@ -63,12 +63,10 @@ hastype(Gamma, inr(E), sum(_, T2)) :-
 
 %% Or Eliminiation
 %% match with?
-hastype(Gamma, case(E0, inl(X), inr(Y), E1, E2), T3) :-
-    hastype(Gamma, X, T1),
-    hastype(Gamma, Y, T2),
+hastype(Gamma, case(E0, E1, E2), T3) :-
     hastype(Gamma, E0, sum(T1, T2)),
-    hastype(Gamma, E1, T3),
-    hastype(Gamma, E2, T3).
+    hastype(Gamma, E1, arrow(T1, T3)),
+    hastype(Gamma, E2, arrow(T2, T3)).
 
 
 %% Function abstraction
