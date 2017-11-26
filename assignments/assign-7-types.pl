@@ -68,6 +68,17 @@ hastype(Gamma, case(E0, E1, E2), T3) :-
     hastype(Gamma, E1, arrow(T1, T3)),
     hastype(Gamma, E2, arrow(T2, T3)).
 
+%% Arbitrary pairs - n-tuples
+hastype(_, ntuple([]), nprod([])).
+hastype(Gamma, ntuple([X1|X]), nprod([T1|T])) :-
+    hastype(Gamma, X1, T1),
+    hastype(Gamma, ntuple(X), nprod(T)).
+
+%% Projection from n-tuples
+%% (find type of kth element of an ntuple)
+hastype(Gamma, nproj(ntuple(X), K), T) :-
+    nth0(K, X, Xk),
+    hastype(Gamma, Xk, T).
 
 %% Function abstraction
 query(hastype([(v(x), int)], abs(v(x), v(x)), _)).
