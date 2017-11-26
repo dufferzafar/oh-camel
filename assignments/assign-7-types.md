@@ -25,3 +25,23 @@ For extra credit (50% extra)
 -- extend the pairing and projection operation for arbitrary tuples.  Hint: use lists and use check for projection operations being of the right kind.
 
 -- generalise from just the two given constructors, to work with arbitrary sums that can have user-defined constructors and take tuples of arguments are arguments.
+
+---
+
+Please take care of the following 
+
+I 
+1. All submissions would be in .pl format. If you are providing additional files for documentation or any other purpose, then zip it along with the .pl file. 
+2. Name your .pl file and zip file with your entry no 
+3. Any submissions with syntactical errors will STRICTLY not be considered for evaluation. 
+
+
+II 
+
+1. All test cases would be based on predicate 'hastype(Gamma, E, T)', where Gamma, E and T are defined on Moodle. Make sure you exactly match the name and signature.
+
+2. You can create any number of internal predicates.
+
+3. Make sure you cover all cases of E and T defined on Moodle.
+
+4. Teset case queries can be based on (i) only constants, (ii) only variables or (iii) combination of variables and constants.
