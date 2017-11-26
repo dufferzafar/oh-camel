@@ -22,8 +22,8 @@ member(X, [_|Z]) :- member(X, Z).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Assumption
-hastype(Gamma, v(X), T) :-
-    member((v(X), T), Gamma).
+hastype(Gamma, X, T) :-
+    member((X, T), Gamma).
 
 %% And Introduction
 %% Pair Construction
