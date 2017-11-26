@@ -83,6 +83,7 @@ hastype(Gamma, nproj(ntuple(X), K), T) :-
 %% Function abstraction
 query(hastype([(v(x), int)], abs(v(x), v(x)), _)).
 query(hastype([(v(x), int), (v(y), char)], abs(v(x), v(y)), _)).
+query(hastype([(v(x), int), (v(y), char)], abs(v(x), pair(v(y), v(x))), _)).
 
 %% Function application
 query(hastype([(v(x), int), (v(y), char)], app(abs(v(x), v(y)), v(x)), _)).
@@ -92,8 +93,12 @@ query(hastype([(v(x), int), (v(y), char)], app(abs(v(x), v(y)), v(y)), _)).
 query(hastype([(v(x), int), (v(y), str)], pair(v(x), v(y)), _)).
 query(hastype(_, pair(v(x), v(y)), prod(int, str))).
 
+%% ntuples
+query(hastype([(v(x), int), (v(y), str), (v(z), char)], ntuple([v(x), v(z), v(y)]), _)).
+
+%% nproj
+query(hastype([(v(x), int), (v(y), str), (v(z), char)], nproj(ntuple([v(x), v(y), v(z)]), 1), _)).
+
 writeln(T) :- write(T), nl.
 main :-
-    forall(query(Q), (Q -> writeln(true: Q) ; writeln(false: Q)))
-    %% ,halt
-    .
+    forall(query(Q), (Q -> writeln(true: Q) ; writeln(false: Q))).
