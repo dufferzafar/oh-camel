@@ -102,3 +102,23 @@ query(hastype([(v(x), int), (v(y), str), (v(z), char)], nproj(ntuple([v(x), v(y)
 writeln(T) :- write(T), nl.
 main :-
     forall(query(Q), (Q -> writeln(true: Q) ; writeln(false: Q))).
+
+%% In case you want to run queries by hand
+
+%% %% Function abstraction
+%% hastype( [(v(x), int)], abs(v(x), v(x)), T).
+%% hastype( [(v(x), int), (v(y), char)], abs(v(x), v(y)), T).
+
+%% %% Function application
+%% hastype( [(v(x), int), (v(y), char)], app(abs(v(x), v(y)), v(x)), T).
+%% hastype( [(v(x), int), (v(y), char)], app(abs(v(x), v(y)), v(y)), T).
+
+%% %% Tuples
+%% hastype( [(v(x), int), (v(y), str)], pair(v(x), v(y)), T).
+%% hastype( G, pair(v(x), v(y)), prod(int, str)).
+
+%% %% ntuples
+%% hastype( [(v(x), int), (v(y), str), (v(z), char)], ntuple([v(x), v(y), v(z)]), T).
+
+%% %% nproj
+%% hastype( [(v(x), int), (v(y), str), (v(z), char)], nproj(ntuple([v(x), v(y), v(z)]), 1), T).
