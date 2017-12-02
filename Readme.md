@@ -47,6 +47,8 @@ This [repo](https://github.com/saurabhs92/logic-and-functional-programming-iit-d
 
 There's not much prior code for this course on the web, but Sanjiva Sir also teaches a course on "Programming Languages" in which he once gave a Prolog Interpreter assignment so GitHub has a ton of other examples for this. [This is the one](https://github.com/swapnil96/Toy-Prolog-Interpreter) I took help from.
 
+[Here is another repository](https://github.com/hthuwal/mcs-ilfp-assignments) by one of my classmates (so it'll have same assignments).
+
 ## Beware of MOSS
 
 MOSS is a tool that can detect similarity in code and it works on OCaml. So If you're copying code from here, do remember to make sufficient changes and be prepared to get a fail grade if you are caught.
